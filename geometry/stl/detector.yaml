@@ -1,0 +1,118 @@
+target: lxe
+log: true
+
+parts:
+  - name: sipm_tiles
+    options:
+      is_detector: true
+      path: "/home/youngsam/sw/chroma-lxe/geometry/stl/sipm_tiles/*.STL"
+
+      # The scale factor to apply to the STL file
+      scale: 1.0
+
+      # The rotation to apply to the STL file
+      rotation:
+        dir: [0.0, 0.0, 0.0]
+        angle: 0.0  # in degrees
+
+      # The translation to apply to the STL file
+      translation: [-34.103, -62.519, -34.15]
+
+      # material properties
+      material:
+        surface: gold
+        material1: full_absorb #??
+        material2: steel
+        color: 0xFFCC00
+
+  - name: sipm_ceramic_board
+    options:
+      is_detector: false
+      path: "/home/youngsam/sw/chroma-lxe/geometry/stl/sipm_ceramic_board.STL"
+
+      # The scale factor to apply to the STL file
+      scale: 1.0
+
+      # The rotation to apply to the STL file
+      rotation:
+        dir: [0.0, 0.0, 0.0]
+        angle: 0.0  # in degrees
+
+      # The translation to apply to the STL file
+      translation: [-34.103, -62.53, -34.15]
+
+      # material properties
+      material:
+        surface: ceramic
+        material1: ceramic
+        material2: lxe
+        color: 0xFFFFFF
+
+  - name: simplified_anode_substrate
+    options:
+      is_detector: false
+      path: "/home/youngsam/sw/chroma-lxe/geometry/stl/simplified_anode_substrate.STL"
+
+      # The scale factor to apply to the STL file
+      scale: 1.0
+
+      # The rotation to apply to the STL file
+      rotation:
+        dir: [0, 1, 0]
+        angle: 112  # in degrees
+
+      # The translation to apply to the STL file
+      translation: [-23.725, 6.4341, 64.523]
+
+      # material properties
+      material:
+        surface: ceramic
+        material1: lxe
+        material2: ceramic
+        color: 0xFF00CC
+
+  - name: simplified_anode
+    options:
+      is_detector: false
+      path: "/home/youngsam/sw/chroma-lxe/geometry/stl/simplified_anode.STL"
+
+      # The scale factor to apply to the STL file
+      scale: 1.0
+
+      # The rotation to apply to the STL file 
+      rotation:
+        dir: [0, 1, 0]
+        angle: 112  # in degrees
+
+      # The translation to apply to the STL file
+      translation: [-19.795, 6.2, 55.423] #5.9041
+
+      # material properties
+      material:
+        surface: gold
+        material1: lxe
+        material2: gold
+        color: 0xFFCC00
+
+  # - name: tpc_assembly
+  #   options:
+  #     is_detector: false
+  #     path: "/home/youngsam/sw/chroma-lxe/geometry/stl/short_tpc_assembly_modulo_anode_sipm.STL"
+
+  #     # The scale factor to apply to the STL file
+  #     scale: 1.0
+
+  #     # The rotation to apply to the STL file
+  #     rotation:
+  #       dir: [0, 0, 0]
+  #       angle: 0  # in degrees
+
+  #     # The translation to apply to the STL file
+  #     translation: [0,0,0]
+
+  #     # material properties
+  #     material:
+  #       surface: steel
+  #       material1: lxe
+  #       material2: steel
+  #       color: 0xCCCCCC
