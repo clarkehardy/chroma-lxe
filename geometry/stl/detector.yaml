@@ -59,7 +59,7 @@ parts:
       # The rotation to apply to the STL file
       rotation:
         dir: [0, 1, 0]
-        angle: 112  # in degrees
+        angle: -112  # in degrees
 
       # The translation to apply to the STL file
       translation: [-23.725, 6.4341, 64.523]
@@ -82,7 +82,7 @@ parts:
       # The rotation to apply to the STL file 
       rotation:
         dir: [0, 1, 0]
-        angle: 112  # in degrees
+        angle: -112  # in degrees
 
       # The translation to apply to the STL file
       translation: [-19.795, 6.2, 55.423] #5.9041
@@ -94,25 +94,25 @@ parts:
         material2: gold
         color: 0xFFCC00
 
-  # - name: tpc_assembly
-  #   options:
-  #     is_detector: false
-  #     path: "/home/youngsam/sw/chroma-lxe/geometry/stl/short_tpc_assembly_modulo_anode_sipm.STL"
+  - name: tpc_assembly
+    options:
+      is_detector: false
+      path: "/home/youngsam/sw/chroma-lxe/geometry/stl/short_tpc_assembly_modulo_anode_sipm.STL"
 
-  #     # The scale factor to apply to the STL file
-  #     scale: 1.0
+      # The scale factor to apply to the STL file
+      scale: 1.0
 
-  #     # The rotation to apply to the STL file
-  #     rotation:
-  #       dir: [0, 0, 0]
-  #       angle: 0  # in degrees
+      # The rotation to apply to the STL file
+      rotation:
+        dir: [0, 0, 0]
+        angle: 0  # in degrees
 
-  #     # The translation to apply to the STL file
-  #     translation: [0,0,0]
+      # The translation to apply to the STL file
+      translation: [0,0,0]
 
-  #     # material properties
-  #     material:
-  #       surface: steel
-  #       material1: lxe
-  #       material2: steel
-  #       color: 0xCCCCCC
+      # material properties
+      material:
+        surface: steel
+        material1: lxe
+        material2: steel
+        color: 0xCCCCCC
