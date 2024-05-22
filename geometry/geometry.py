@@ -16,9 +16,65 @@ import surfaces
 
 import logging
 
-
 log = logging.getLogger(__file__.split('/')[-1].split('.')[0])
 log.setLevel(logging.INFO)
+
+def gen_rot(a,b):
+    """Generate a rotation matrix that rotates vector a to vector b"""
+    a = a / np.linalg.norm(a)
+    b = b / np.linalg.norm(b)
+
+    if np.allclose(a, -b):
+        return np.eye(3)
+    elif np.allclose(a, b):
+        if a[1] == 0 and a[2] == 0:
+            v = np.cross(a, [0, 1, 0])
+        else:
+            v = np.cross(a, [1, 0, 0])
+        c = np.pi
+    else:
+        v = np.cross(a, b)
+        c = np.arccos(np.dot(a, b))
+    return make_rotation_matrix(c, v)
+
+class BBox:
+    def __init__(self, vertices_or_min=[0,0,0], max=[0,0,0]):
+        if np.shape(vertices_or_min) == (3,):
+            self.min = np.asarray(vertices_or_min)
+            self.max = np.asarray(max)
+        else:
+            self.min = np.min(vertices_or_min, axis=0)
+            self.max = np.max(vertices_or_min, axis=0)
+
+        assert len(self.min) == len(self.max) == 3
+
+    def __repr__(self):
+        return f'BBox(min={self.min}, max={self.max})'
+    
+    def __add__(self, other):
+        new_min = np.c_[self.min, other.min].min(axis=1)
+        new_max = np.c_[self.max, other.max].max(axis=1)
+        return BBox(new_min, new_max)
+    
+    def as_mesh(self):
+        box_center = (self.min + self.max) / 2
+        dx,dy,dz = self.extent
+
+        return make.box(dx, dy, dz, center=box_center)
+    
+    @property
+    def extent(self):
+        return self.max - self.min
+    
+def add_cavity(g, bbox, material1=materials.lxe, material2=materials.vacuum, surface=surfaces.reflect0):
+    cavity = make.cylinder_along_z(bbox.extent.max(), 2*bbox.extent.max())
+    rot_normal = gen_rot(
+                    [0,0,1],
+                    [1 if i == bbox.extent.argmax() else 0 for i in range(3)] # i.e. (1,0,0), (0,1,0), or (0,0,1)
+                )
+
+    solid = geometry.Solid(cavity, material1, material2, surface=surface, color=0xF0CCCCCC)
+    g.add_solid(solid, rotation=rot_normal)
 
 def build_detector_from_yaml(config_path, flat=True, save_cache=True, load_cache=True):
     if load_cache:
@@ -32,12 +88,7 @@ def build_detector_from_yaml(config_path, flat=True, save_cache=True, load_cache
 
     g = Detector(target)
     
-    mesh = make.cylinder_along_z(1000, 2*1000)
-    cavity = geometry.Solid(mesh, target, materials.vacuum, surface=surfaces.reflect0, color=0xC8CCCCCC)
-    
-    g.add_solid(cavity)
-
-    channel_id = 0
+    solid_bbox = BBox()
     for i,part in enumerate(config['parts']):
         opts = part['options']
 
@@ -57,8 +108,6 @@ def build_detector_from_yaml(config_path, flat=True, save_cache=True, load_cache
 
         translation = opts['translation']
 
-        is_det = opts['is_detector']
-
         # load materials
         material_kwargs = {}
         for keyword in ('material1', 'material2', 'surface'):
@@ -71,13 +120,15 @@ def build_detector_from_yaml(config_path, flat=True, save_cache=True, load_cache
                 log.info('  loading %s', p.split('/')[-1])
             
             mesh = mesh_from_stl(p)
-            
             solid = geometry.Solid(mesh, **material_kwargs)
+            solid_bbox += BBox(mesh.vertices)
 
-            if is_det:
+            if opts['is_detector']:
                 g.add_pmt(solid, rotation, translation)
             else:
                 g.add_solid(solid, rotation, translation)
+
+    add_cavity(g, solid_bbox)
 
     if flat:
         g = create_geometry_from_obj(g)
