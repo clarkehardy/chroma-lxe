@@ -13,7 +13,7 @@ def parse_args():
 
     parser = argparse.ArgumentParser(description='Run a test simulation')
     # detector yaml. default is the one in the geometry directory
-    parser.add_argument('--path', default='../geometry/stl/detector.yaml', help='Detector yaml file')
+    parser.add_argument('--path', default='../geometry/config/detector.yaml', help='Detector yaml file')
     parser.add_argument('-o', '--output', default=None, help='Save events to a root file')
     # -n or --nphotons
     parser.add_argument('-n', type=int, default=100, help='Number of photons to simulate')

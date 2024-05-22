@@ -17,7 +17,7 @@ parts:
       is_detector: true
 
       # Note: each file in the path will be loaded as a separate part with its own channel!
-      path: "/home/youngsam/sw/chroma-lxe/geometry/stl/sipm_tiles/*.STL"
+      path: "/home/youngsam/sw/chroma-lxe/data/stl/sipm_tiles/*.STL"
 
       # The scale factor to apply to the STL file
       scale: 1.0
@@ -40,7 +40,7 @@ parts:
   - name: sipm_ceramic_board
     options:
       is_detector: false
-      path: "/home/youngsam/sw/chroma-lxe/geometry/stl/sipm_ceramic_board.STL"
+      path: "/home/youngsam/sw/chroma-lxe/data/stl/sipm_ceramic_board.STL"
 
       # The scale factor to apply to the STL file
       scale: 1.0
@@ -63,7 +63,7 @@ parts:
   - name: simplified_anode_substrate
     options:
       is_detector: false
-      path: "/home/youngsam/sw/chroma-lxe/geometry/stl/simplified_anode_substrate.STL"
+      path: "/home/youngsam/sw/chroma-lxe/data/stl/simplified_anode_substrate.STL"
 
       # The scale factor to apply to the STL file
       scale: 1.0
@@ -86,7 +86,7 @@ parts:
   - name: simplified_anode
     options:
       is_detector: false
-      path: "/home/youngsam/sw/chroma-lxe/geometry/stl/simplified_anode.STL"
+      path: "/home/youngsam/sw/chroma-lxe/data/stl/simplified_anode.STL"
 
       # The scale factor to apply to the STL file
       scale: 1.0
@@ -109,7 +109,7 @@ parts:
   - name: tpc_assembly
     options:
       is_detector: false
-      path: "/home/youngsam/sw/chroma-lxe/geometry/stl/short_tpc_assembly_modulo_anode_sipm.STL"
+      path: "/home/youngsam/sw/chroma-lxe/data/stl/short_tpc_assembly_modulo_anode_sipm.STL"
 
       # The scale factor to apply to the STL file
       scale: 1.0
