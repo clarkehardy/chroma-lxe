@@ -49,14 +49,14 @@ __PART_FORMAT = """
 """
 
 
-def part_from_stl(filename):
-    name = filename.split('/')[-1].split('.')[0]
-    return __PART_FORMAT.format(name, filename)
+def part_from_stl(path):
+    name = path.split('/')[-1].split('.')[0]
+    return __PART_FORMAT.format(name, path)
 
 def config_from_stls(files):
     return reduce(lambda x,y: x+y, map(part_from_stl, files))
 
-def dump_config(config, filename):
+def dump_config(config, path):
     TEXT = __PREAMBLE + __DETLEVEL_FORMAT + config
 
     # check that the file is correct yaml
@@ -67,7 +67,7 @@ def dump_config(config, filename):
         print(e)
         return
 
-    with open(filename, 'w') as f:
+    with open(path, 'w') as f:
         f.write(TEXT)
 
 if __name__ == "__main__":
