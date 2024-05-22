@@ -33,7 +33,7 @@ parts:
       # material properties
       material:
         surface: perfect_detector
-        material1: lxe
+        material1: ceramic
         material2: lxe
         color: 0xFFCC00
 
@@ -56,7 +56,7 @@ parts:
       # material properties
       material:
         surface: ceramic
-        material1: lxe
+        material1: ceramic
         material2: lxe
         color: 0xFFFFFF
 
@@ -79,7 +79,7 @@ parts:
       # material properties
       material:
         surface: ceramic
-        material1: lxe
+        material1: ceramic
         material2: lxe
         color: 0xFFFFFF
 
@@ -102,7 +102,7 @@ parts:
       # material properties
       material:
         surface: gold
-        material1: lxe
+        material1: ceramic
         material2: lxe
         color: 0xFFCC00
 
@@ -125,6 +125,6 @@ parts:
       # material properties
       material:
         surface: steel
-        material1: lxe
+        material1: steel
         material2: lxe
-        color: 0xC8CCCCCC
+        color: 0xC83B3B3B
