@@ -89,3 +89,5 @@ reflect0 = Surface('reflect0')
 reflect0.set('absorb', 0.95)
 reflect0.set('reflect_specular', 0.05)
 #***************************************************************************
+perfect_detector = Surface('perfect_detector')
+perfect_detector.set('detect', 1.0)
