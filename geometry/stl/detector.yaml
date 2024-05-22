@@ -1,3 +1,13 @@
+# Description: This file is used to define the geometry of the detector.
+#             The geometry is defined by a list of parts, each of which
+#             is a separate STL file. Each part can have its own material
+#             properties, and can be marked as a detector or not.
+#
+#             Colors are specified in hexadecimal format, with the alpha
+#             channel as the first two digits, followed by red, green, and
+#             blue. I.e., 0xAARRGGBB.
+#
+
 target: lxe
 log: true
 
@@ -5,6 +15,8 @@ parts:
   - name: sipm_tiles
     options:
       is_detector: true
+
+      # Note: each file in the path will be loaded as a separate part with its own channel!
       path: "/home/youngsam/sw/chroma-lxe/geometry/stl/sipm_tiles/*.STL"
 
       # The scale factor to apply to the STL file
@@ -20,9 +32,9 @@ parts:
 
       # material properties
       material:
-        surface: gold
-        material1: full_absorb #??
-        material2: steel
+        surface: perfect_detector
+        material1: lxe
+        material2: lxe
         color: 0xFFCC00
 
   - name: sipm_ceramic_board
@@ -44,7 +56,7 @@ parts:
       # material properties
       material:
         surface: ceramic
-        material1: ceramic
+        material1: lxe
         material2: lxe
         color: 0xFFFFFF
 
@@ -68,8 +80,8 @@ parts:
       material:
         surface: ceramic
         material1: lxe
-        material2: ceramic
-        color: 0xFF00CC
+        material2: lxe
+        color: 0xFFFFFF
 
   - name: simplified_anode
     options:
@@ -91,7 +103,7 @@ parts:
       material:
         surface: gold
         material1: lxe
-        material2: gold
+        material2: lxe
         color: 0xFFCC00
 
   - name: tpc_assembly
@@ -114,5 +126,5 @@ parts:
       material:
         surface: steel
         material1: lxe
-        material2: steel
-        color: 0xCCCCCC
+        material2: lxe
+        color: 0xC8CCCCCC
