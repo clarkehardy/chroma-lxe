@@ -58,7 +58,6 @@ def build_detector_from_yaml(config_path, flat=True, save_cache=True, load_cache
         translation = opts['translation']
 
         is_det = opts['is_detector']
-        print(f"  is detector: {is_det}")
 
         # load materials
         material_kwargs = {}
@@ -122,8 +121,7 @@ if __name__ == '__main__':
         cam = Camera(g)
         cam.run()
     else:
-        print('viewin..')
-        import pygame
+        import pygame  # sy (5/21/24) this avoids a segfault on turning on the camera. I don't know why. Don't ask.
         pygame.init()
 
         viewer = EventViewer(g, args.input, size=(1200, 1200))
