@@ -32,7 +32,7 @@ __PART_FORMAT = """
       scale: 1.0
 
       # The translation to apply to the STL file
-      translation: (0,0,0)
+      translation: [0,0,0]
 
       # The rotation to apply to the STL file
       rotation:
@@ -41,9 +41,9 @@ __PART_FORMAT = """
 
     # Material properties
       material:
+        surface: null     # change me!
         material1: null   # change me!
         material2: null   # change me!
-        surface: null     # change me!
         color: 0x00FFFFFF
 
 """
@@ -87,5 +87,7 @@ if __name__ == "__main__":
     # create a dictionary with the name of the output file and the list of files
     config = config_from_stls(args.files)
     # dump the dictionary into a yaml file
+    
+    assert args.output.endswith('.yaml'), f"Output file {args.output} must end in .yaml, not .{args.output.split('.')[-1]}. Did you supply one?"
     dump_config(config, args.output)
 
