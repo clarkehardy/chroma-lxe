@@ -5,6 +5,7 @@ if ! command -v gdown &> /dev/null; then
     exit 1
 fi
 
+mkdir ../data/stl &> /dev/null
 gdown https://drive.google.com/uc?id=1dLqrSXCod2-ARkKj-hgAGjMm4sxuCku- -O ../data/smalltpc.tar.xz
 tar -xvf ../data/smalltpc.tar.xz -C ../data/stl
 echo "Removing tarball..."
