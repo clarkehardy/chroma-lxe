@@ -14,7 +14,7 @@ class Fiber:
         intensity,
         diameter,
         numerical_aperture,
-        profile="cladding",
+        mode="cladding",
         position=(0, 0, 0),
         direction=(0, 0, 1),
     ):
@@ -26,7 +26,7 @@ class Fiber:
         - intensity (array-like): The intensity values corresponding to each wavelength.
         - diameter (float): The diameter of the fiber, in microns.
         - numerical_aperture (float): The numerical aperture of the fiber.
-        - profile (str, optional): The profile of the fiber. Can be either 'cladding' or 'gaussian'. Defaults to 'cladding'.
+        - mode (str, optional): The intensity mode of the fiber. Can be either 'cladding' or 'gaussian'. Defaults to 'cladding'.
 
         Raises:
         - AssertionError: If the wavelength and intensity arrays have different lengths, if the diameter is not positive,
@@ -42,10 +42,10 @@ class Fiber:
         ), "Wavelength and intensity arrays must have the same length"
         assert diameter > 0, "Fiber diameter must be positive"
         assert 0 < numerical_aperture <= 1, "Numerical aperture must be between 0 and 1"
-        assert profile in [
+        assert mode in [
             "cladding",
             "gaussian",
-        ], "Profile must be either 'cladding' or 'gaussian'"
+        ], "Mode must be either 'cladding' or 'gaussian'"
 
         self.wavelength = wavelength
         self.cdf = np.cumsum(intensity)
@@ -53,7 +53,7 @@ class Fiber:
 
         self.diameter = um2mm(diameter)  # chroma uses mm
         self.numerical_aperture = numerical_aperture
-        if profile == "cladding":
+        if mode == "cladding":
             self.position_sampler = self.sample_positions_cladding
         else:
             self.position_sampler = self.sample_positions_gaussian
@@ -62,7 +62,7 @@ class Fiber:
         direction = np.array(direction) / np.linalg.norm(direction)
         self.rotation_matrix = utils.gen_rot([0, 0, 1], direction)
 
-    def sample_wavelengths(self, num_samples):
+    def wavelength_sampler(self, num_samples):
         random_values = np.random.rand(num_samples)
         sampled_wavelengths = np.interp(random_values, self.cdf, self.wavelength)
         return sampled_wavelengths
@@ -113,7 +113,7 @@ class Fiber:
 
         return pos
 
-    def sample_directions(self, num_samples):
+    def direction_sampler(self, num_samples):
         # Sample initial directions based on the numerical aperture
         divergence_angle = np.arcsin(self.numerical_aperture)
 
@@ -136,22 +136,42 @@ class Fiber:
     def generate_photons(self, num_photons):
         num_photons = int(num_photons)
         positions = self.position_sampler(num_photons)
-        directions = self.sample_directions(num_photons)
-        initial_wavelengths = self.sample_wavelengths(num_photons)
+        directions = self.direction_sampler(num_photons)
+        initial_wavelengths = self.wavelength_sampler(num_photons)
 
         return Photons(positions, directions, wavelengths=initial_wavelengths)
 
 
 class M114L01(Fiber):
+    """https://www.thorlabs.com/thorproduct.cfm?partnumber=M114
+
+    The mode of this fiber can be a little confusing. This "cladding" mode will
+    occur when several fibers are connected in series, resulting in a lot of the
+    light being "lost" into the cladding. TIR can still occur in the cladding, so a
+    ring-like profile emerges when there's more light stuck in the cladding than the
+    core of the fiber. A gaussian-like profile will occur when a single fiber is
+    connected to a light source.
+    
+    See https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=5591, section "MM 
+    Fiber Tutorial" for more details.
+    """
+
+    numerical_aperture = 0.22
+    diameter = 600  # um
+    mode = "cladding"
+
     def __init__(self, position=(0, 0, 0), direction=(0, 0, 1)):
         xe_wvl, xe_intensities = pickle.load(
             open("/home/sam/sw/chroma-lxe/data/xe-spectrum.p", "rb")
         )
-        NA = 0.22
-        diameter = 600  # um
-        profile = "cladding"
         super().__init__(
-            xe_wvl, xe_intensities, diameter, NA, profile, position, direction
+            xe_wvl,
+            xe_intensities,
+            self.diameter,
+            self.numerical_aperture,
+            self.mode,
+            position,
+            direction,
         )
 
 
