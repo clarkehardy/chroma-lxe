@@ -13,29 +13,13 @@ from chroma.cache import Cache
 from chroma.camera import view, EventViewer
 import materials
 import surfaces
+import utils
 
 import logging
 
 log = logging.getLogger(__file__.split('/')[-1].split('.')[0])
 log.setLevel(logging.INFO)
 
-def gen_rot(a,b):
-    """Generate a rotation matrix that rotates vector a to vector b"""
-    a = a / np.linalg.norm(a)
-    b = b / np.linalg.norm(b)
-
-    if np.allclose(a, -b):
-        return np.eye(3)
-    elif np.allclose(a, b):
-        if a[1] == 0 and a[2] == 0:
-            v = np.cross(a, [0, 1, 0])
-        else:
-            v = np.cross(a, [1, 0, 0])
-        c = np.pi
-    else:
-        v = np.cross(a, b)
-        c = np.arccos(np.dot(a, b))
-    return make_rotation_matrix(c, v)
 
 class BBox:
     def __init__(self, vertices_or_min=[0,0,0], max=[0,0,0]):
@@ -68,10 +52,12 @@ class BBox:
     
 def add_cavity(g, bbox, material1=materials.lxe, material2=materials.vacuum, surface=surfaces.reflect0):
     cavity = make.cylinder_along_z(bbox.extent.max(), 2*bbox.extent.max())
-    rot_normal = gen_rot(
-                    [0,0,1],
-                    [1 if i == bbox.extent.argmax() else 0 for i in range(3)] # i.e. (1,0,0), (0,1,0), or (0,0,1)
-                )
+    rot_normal = utils.gen_rot(
+        [0, 0, 1],
+        [
+            1 if i == bbox.extent.argmax() else 0 for i in range(3)
+        ],  # i.e. (1,0,0), (0,1,0), or (0,0,1)
+    )
 
     solid = geometry.Solid(cavity, material1, material2, surface=surface, color=0xF0CCCCCC)
     g.add_solid(solid, rotation=rot_normal)
