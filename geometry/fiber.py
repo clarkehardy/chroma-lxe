@@ -2,6 +2,7 @@ import pickle
 
 import numpy as np
 from chroma.event import Photons
+from chroma.sample import uniform_sphere
 from scipy.interpolate import interp1d
 from scipy.special import jn
 import utils
@@ -59,8 +60,8 @@ class Fiber:
             self.position_sampler = self.sample_positions_gaussian
 
         self.position = np.array(position)
-        direction = np.array(direction) / np.linalg.norm(direction)
-        self.rotation_matrix = utils.gen_rot([0, 0, 1], direction)
+        self.direction = np.array(direction) / np.linalg.norm(direction)
+        self.rotation_matrix = utils.gen_rot([0, 0, 1], self.direction)
 
     def wavelength_sampler(self, num_samples):
         random_values = np.random.rand(num_samples)
@@ -84,7 +85,9 @@ class Fiber:
                 (pos, self.sample_positions_gaussian(num_samples - len(pos)))
             )
 
-        return pos
+        return (
+            np.dot(pos, self.rotation_matrix.T) + self.position - 1e-3 * self.direction
+        )
 
     def sample_positions_cladding(self, num_samples):
         r = np.linspace(0, self.diameter / 2, 500)
@@ -98,8 +101,6 @@ class Fiber:
         )
         sampled_r = interp_r(random_values)
 
-        print(sampled_r.max(), sampled_r.min(), self.diameter / 2)
-
         theta = 2 * np.pi * np.random.rand(num_samples)
         x = sampled_r * np.cos(theta)
         y = sampled_r * np.sin(theta)
@@ -107,11 +108,18 @@ class Fiber:
         pos = np.stack((x, y, z), axis=-1)
 
         while len(pos) < num_samples:
-            return np.vstack(
-                (pos, self.sample_positions_cladding(num_samples - len(pos)))
+            return (
+                np.dot(
+                    np.vstack(
+                        (pos, self.sample_positions_cladding(num_samples - len(pos)))
+                    ),
+                    self.rotation_matrix.T,
+                )
+                + self.position
+                - 1e-3 * self.direction
             )
 
-        return pos
+        return np.dot(pos, self.rotation_matrix.T) + self.position - 1e-3 * self.direction
 
     def direction_sampler(self, num_samples):
         # Sample initial directions based on the numerical aperture
@@ -131,15 +139,16 @@ class Fiber:
 
         # Normalize directions to unit vectors
         directions /= np.linalg.norm(directions, axis=1)[:, np.newaxis]
-        return directions
+        return np.dot(directions, self.rotation_matrix.T)
 
     def generate_photons(self, num_photons):
         num_photons = int(num_photons)
         positions = self.position_sampler(num_photons)
         directions = self.direction_sampler(num_photons)
+        polarizations = np.cross(directions, uniform_sphere(num_photons))
         initial_wavelengths = self.wavelength_sampler(num_photons)
 
-        return Photons(positions, directions, wavelengths=initial_wavelengths)
+        return Photons(positions, directions, polarizations, initial_wavelengths)
 
 
 class M114L01(Fiber):
@@ -160,7 +169,7 @@ class M114L01(Fiber):
     diameter = 600  # um
     mode = "cladding"
 
-    def __init__(self, position=(0, 0, 0), direction=(0, 0, 1)):
+    def __init__(self, position=(0, 0, 0), direction=(0, 0, 1), mode='cladding'):
         xe_wvl, xe_intensities = pickle.load(
             open("/home/sam/sw/chroma-lxe/data/xe-spectrum.p", "rb")
         )
@@ -169,7 +178,7 @@ class M114L01(Fiber):
             xe_intensities,
             self.diameter,
             self.numerical_aperture,
-            self.mode,
+            mode,
             position,
             direction,
         )
