@@ -13,32 +13,16 @@ from chroma.cache import Cache
 from chroma.camera import view, EventViewer
 import materials
 import surfaces
+import utils
 
 import logging
 
 log = logging.getLogger(__file__.split('/')[-1].split('.')[0])
 log.setLevel(logging.INFO)
 
-def gen_rot(a,b):
-    """Generate a rotation matrix that rotates vector a to vector b"""
-    a = a / np.linalg.norm(a)
-    b = b / np.linalg.norm(b)
-
-    if np.allclose(a, -b):
-        return np.eye(3)
-    elif np.allclose(a, b):
-        if a[1] == 0 and a[2] == 0:
-            v = np.cross(a, [0, 1, 0])
-        else:
-            v = np.cross(a, [1, 0, 0])
-        c = np.pi
-    else:
-        v = np.cross(a, b)
-        c = np.arccos(np.dot(a, b))
-    return make_rotation_matrix(c, v)
 
 class BBox:
-    def __init__(self, vertices_or_min=[0,0,0], max=[0,0,0]):
+    def __init__(self, vertices_or_min=[np.inf,np.inf,np.inf], max=[-np.inf,-np.inf,-np.inf]):
         if np.shape(vertices_or_min) == (3,):
             self.min = np.asarray(vertices_or_min)
             self.max = np.asarray(max)
@@ -68,13 +52,15 @@ class BBox:
     
 def add_cavity(g, bbox, material1=materials.lxe, material2=materials.vacuum, surface=surfaces.reflect0):
     cavity = make.cylinder_along_z(bbox.extent.max(), 2*bbox.extent.max())
-    rot_normal = gen_rot(
-                    [0,0,1],
-                    [1 if i == bbox.extent.argmax() else 0 for i in range(3)] # i.e. (1,0,0), (0,1,0), or (0,0,1)
-                )
+    rot_normal = utils.gen_rot(
+        [0, 0, 1],
+        [
+            1 if i == bbox.extent.argmax() else 0 for i in range(3)
+        ],  # i.e. (1,0,0), (0,1,0), or (0,0,1)
+    )
 
     solid = geometry.Solid(cavity, material1, material2, surface=surface, color=0xF0CCCCCC)
-    g.add_solid(solid, rotation=rot_normal)
+    g.add_solid(solid, rotation=rot_normal, displacement=bbox.min + bbox.extent/2)
 
 def build_detector_from_yaml(config_path, flat=True, save_cache=True, load_cache=True):
     if load_cache:
@@ -96,7 +82,7 @@ def build_detector_from_yaml(config_path, flat=True, save_cache=True, load_cache
         total = len(config['parts'])
         print(f"[{curr}/{total}] building part {part['name']}")
         
-        path = list(glob.glob(opts['path']))
+        path = sorted(list(glob.glob(opts['path'])))
 
         if not opts['rotation']['angle']:
             rotation = np.eye(3)
@@ -175,5 +161,6 @@ if __name__ == '__main__':
         import pygame  # sy (5/21/24) this avoids a segfault on turning on the camera. I don't know why. Don't ask.
         pygame.init()
 
-        viewer = EventViewer(g, args.input, size=(1200, 1200))
+        viewer = EventViewer(g, args.input, size=(1500, 1500),
+                             background=0x000000)
         viewer.run()

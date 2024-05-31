@@ -68,6 +68,13 @@ steel.set('reflect_diffuse', R)		#https://www.klaran.com/images/kb/application-n
 steel.set('reflect_specular', R)
 steel.set('absorb',1 - 2*R)
 #***************************************************************************
+polished_steel = Surface('polished_steel')                  #modified by Jacopo 07/31/2019
+R = 0.8
+polished_steel.set('reflect_diffuse', 0)		#https://www.klaran.com/images/kb/application-notes/Using-UV-Reflective-Materials-to-Maximize-Disinfection---Application-Note---AN011.pdf
+polished_steel.set('reflect_specular', R)
+polished_steel.set('absorb',1-R)
+polished_steel.set('detect',1)
+#***************************************************************************
 ceramic = Surface('Ceramic')
 ceramic_reflect = 0.35				#https://engineering.case.edu/centers/sdle/sites/engineering.case.edu.centers.sdle/files/optical_properties_of_aluminum_oxide_determined_f.pdf
 ceramic.set('reflect_diffuse', ceramic_reflect)	#https://www.accuratus.com/accuflect/Accuflect_Reflectance.pdf
