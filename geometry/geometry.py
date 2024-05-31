@@ -22,7 +22,7 @@ log.setLevel(logging.INFO)
 
 
 class BBox:
-    def __init__(self, vertices_or_min=[0,0,0], max=[0,0,0]):
+    def __init__(self, vertices_or_min=[np.inf,np.inf,np.inf], max=[-np.inf,-np.inf,-np.inf]):
         if np.shape(vertices_or_min) == (3,):
             self.min = np.asarray(vertices_or_min)
             self.max = np.asarray(max)
@@ -60,7 +60,7 @@ def add_cavity(g, bbox, material1=materials.lxe, material2=materials.vacuum, sur
     )
 
     solid = geometry.Solid(cavity, material1, material2, surface=surface, color=0xF0CCCCCC)
-    g.add_solid(solid, rotation=rot_normal)
+    g.add_solid(solid, rotation=rot_normal, displacement=bbox.min + bbox.extent/2)
 
 def build_detector_from_yaml(config_path, flat=True, save_cache=True, load_cache=True):
     if load_cache:
@@ -82,7 +82,7 @@ def build_detector_from_yaml(config_path, flat=True, save_cache=True, load_cache
         total = len(config['parts'])
         print(f"[{curr}/{total}] building part {part['name']}")
         
-        path = list(glob.glob(opts['path']))
+        path = sorted(list(glob.glob(opts['path'])))
 
         if not opts['rotation']['angle']:
             rotation = np.eye(3)
@@ -161,5 +161,6 @@ if __name__ == '__main__':
         import pygame  # sy (5/21/24) this avoids a segfault on turning on the camera. I don't know why. Don't ask.
         pygame.init()
 
-        viewer = EventViewer(g, args.input, size=(1200, 1200))
+        viewer = EventViewer(g, args.input, size=(1500, 1500),
+                             background=0x000000)
         viewer.run()
