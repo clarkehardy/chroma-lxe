@@ -22,6 +22,10 @@ def parse_args():
     parser.add_argument(
         "-n", type=int, default=100, help="Number of photons to simulate"
     )
+    # number of fibers
+    parser.add_argument(
+        "-f", "--nfibers", type=int, default=1, help="Number of fibers to simulate"
+    )
     parser.add_argument("--seed", type=int, default=123, help="Random seed")
     parser.add_argument('--no-cache', action='store_true', help='do not load from cache')
 
@@ -59,22 +63,28 @@ def main():
     from chroma.sim import Simulation
     from chroma.loader import load_bvh
     from chroma.generator import vertex
+    import yaml
     import sys
+    from tqdm import tqdm
 
     sys.path.append("../geometry")
     from fiber import M114L01
     from geometry import build_detector_from_yaml
 
-    g = build_detector_from_yaml('../geometry/config/ea-hv.yaml', flat=True, 
+    g = build_detector_from_yaml('../geometry/config/ea-hv_4_fibers.yaml', flat=True, 
                                  load_cache=not args.no_cache)
     g.bvh = load_bvh(g, read_bvh_cache=True)
 
     sim = Simulation(g, geant4_processes=0, seed=args.seed, photon_tracking=True)
 
-    fiber = M114L01(
-        position=[193.3112338, 364.80093949, 339.61920449],
-        direction=[-7.36934121e-01, 6.75964569e-01, 5.51121214e-05],
-    )
+    posdir = yaml.safe_load(open('../data/stl/fibers/fiber_positions.yaml', 'r'))
+    fibers = []
+    for i in range(4):
+        fiber = M114L01(
+            position=posdir[f'fiber_{i}']['position'],
+            direction=posdir[f'fiber_{i}']['direction'],
+        )
+        fibers.append(fiber)
 
     if args.output:
         from chroma.io.root import RootWriter
@@ -87,7 +97,7 @@ def main():
     assert sum(N) == args.n
 
     for ev in sim.simulate(
-        [fiber.generate_photons(n) for n in N],
+        tqdm([fiber.generate_photons(n) for n in N for fiber in fibers]),
         keep_photons_beg=False,
         keep_photons_end=True,
         run_daq=True,
