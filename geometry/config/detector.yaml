@@ -17,7 +17,7 @@ parts:
       is_detector: true
 
       # Note: each file in the path will be loaded as a separate part with its own channel!
-      path: "/home/youngsam/sw/chroma-lxe/data/stl/sipm_tiles/*.STL"
+      path: "/home/youngsam/sw/chroma-lxe/data/stl/sipm_channels/*.STL"
 
       # The scale factor to apply to the STL file
       scale: 1.0
