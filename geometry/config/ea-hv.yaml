@@ -17,9 +17,9 @@ log: true
 parts:
   - name: EA-HV_electrode
     options:
-      is_detector: false
+      is_detector: true
 
-      path: /Users/youngsam/Desktop/Research/opHV/STLs/EA-HV_electrode.STL
+      path: /home/sam/sw/chroma-lxe/data/stl/electrode_stls/5000_parts/*.stl
 
       # The scale factor to apply to the STL file
       scale: 1.0
@@ -35,7 +35,7 @@ parts:
     # Material properties
       material:
         surface: polished_steel     # change me!
-        material1: polished_steel   # change me!
+        material1: steel   # change me!
         material2: lxe   # change me!
         color: 0xFFCC00
 
@@ -44,7 +44,7 @@ parts:
     options:
       is_detector: false
 
-      path: /Users/youngsam/Desktop/Research/opHV/STLs/EA-HV_fiber.STL
+      path: /home/sam/sw/chroma-lxe/data/stl/EA-HV_fiber.STL
 
       # The scale factor to apply to the STL file
       scale: 1.0
@@ -62,14 +62,14 @@ parts:
         surface: steel     # change me!
         material1: steel   # change me!
         material2: lxe   # change me!
-        color: 0xFF3B3B3B
+        color: 0xFFCC00
 
 
   - name: EA-HV_no_electrode
     options:
       is_detector: false
 
-      path: /Users/youngsam/Desktop/Research/opHV/STLs/EA-HV_no_electrode.STL
+      path: /home/sam/sw/chroma-lxe/data/stl/EA-HV_no_electrode_plugged.STL
 
       # The scale factor to apply to the STL file
       scale: 1.0

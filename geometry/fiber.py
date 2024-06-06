@@ -5,7 +5,10 @@ from chroma.event import Photons
 from chroma.sample import uniform_sphere
 from scipy.interpolate import interp1d
 from scipy.special import jn
-import utils
+try:
+    from . import utils
+except:
+    import utils
 
 
 class Fiber:
@@ -61,7 +64,7 @@ class Fiber:
 
         self.position = np.array(position)
         self.direction = np.array(direction) / np.linalg.norm(direction)
-        self.rotation_matrix = utils.gen_rot([0, 0, 1], self.direction)
+        self.rotation_matrix = utils.gen_rot([0, 0, -1], self.direction)
 
     def wavelength_sampler(self, num_samples):
         random_values = np.random.rand(num_samples)
@@ -81,12 +84,15 @@ class Fiber:
         pos = np.stack((x, y, z), axis=-1)
 
         while len(pos) < num_samples:
-            return np.vstack(
+            return np.dot(
+                np.vstack(
                 (pos, self.sample_positions_gaussian(num_samples - len(pos)))
-            )
+            ),
+                self.rotation_matrix.T,
+            ) + self.position + 1e-3 * self.direction
 
         return (
-            np.dot(pos, self.rotation_matrix.T) + self.position - 1e-3 * self.direction
+            np.dot(pos, self.rotation_matrix.T) + self.position + 1e-3 * self.direction
         )
 
     def sample_positions_cladding(self, num_samples):
@@ -116,10 +122,10 @@ class Fiber:
                     self.rotation_matrix.T,
                 )
                 + self.position
-                - 1e-3 * self.direction
+                + 1e-3 * self.direction
             )
 
-        return np.dot(pos, self.rotation_matrix.T) + self.position - 1e-3 * self.direction
+        return np.dot(pos, self.rotation_matrix.T) + self.position + 1e-3 * self.direction
 
     def direction_sampler(self, num_samples):
         # Sample initial directions based on the numerical aperture
@@ -149,7 +155,25 @@ class Fiber:
         initial_wavelengths = self.wavelength_sampler(num_photons)
 
         return Photons(positions, directions, polarizations, initial_wavelengths)
+    
+    def generate_photons_mesh(self, num_photons=1000):
+        import trimesh
+        
+        phots = self.generate_photons(num_photons)
+        # pointcloud
+        pc = trimesh.points.PointCloud(phots.pos)
+        # set color to red
+        pc.colors = list(
+            map(utils.wvl2rgb, np.clip(phots.wavelengths - phots.wavelengths.min() + 380, 380, 780))
+        )
 
+        cyls = []
+        for i, (pos, dir) in enumerate(zip(phots.pos, phots.dir)):
+            cyl = utils.cylinder(pos, 0.01, 20, dir)
+            cyl.visual.face_colors = pc.colors[i]
+
+            cyls.append(cyl)
+        return cyls
 
 class M114L01(Fiber):
     """https://www.thorlabs.com/thorproduct.cfm?partnumber=M114
