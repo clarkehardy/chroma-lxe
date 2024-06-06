@@ -61,9 +61,10 @@ def parse_args():
     import argparse
 
     parser = argparse.ArgumentParser(description='Run a test simulation')
-    parser.add_argument('--path', default='../geometry/config/detector.yaml', help='Detector yaml file')
-    parser.add_argument('-o', '--output', default='out.root', help='Where to save PTE data.')
-    parser.add_argument('-n', type=int, default=100, help='Number of photons to simulate')
+    parser.add_argument('-C', '--config', default='../geometry/config/detector.yaml', help='Detector yaml file')
+    parser.add_argument('-P', '--positions', required=True, help='Photon positions')
+    parser.add_argument('-O', '--output', required=True, help='Where to save PTE data.')
+    parser.add_argument('-N', type=int, default=100, help='Number of photons to simulate')
     # argument for whether to use a single channel or individual channels
     parser.add_argument('--single_channel', action='store_true', help='Treat all detecting channels as one')
     parser.add_argument('--seed', type=int, default=None, help='Random seed')
@@ -81,19 +82,17 @@ def photon_bomb(n,wavelength,pos):
 
 def main():
     from tqdm import tqdm
-    import chroma
-    from chroma.io.root import RootWriter
+    # import chroma
+    # from chroma.io.root import RootWriter
 
-    t0 = time.time()
     args = parse_args()
     
-    photon_pos = np.load('../data/lightmap_points_2mm.npy')
+    photon_pos = np.load(args.positions)
     
-    g = build_detector_from_yaml(args.path, flat=True)
+    g = build_detector_from_yaml(args.config, flat=True)
     g.bvh = load_bvh(g, read_bvh_cache=True)
 
     sim = Simulation(g,geant4_processes=0, seed=123, photon_tracking=False)
-    simulated = 0
 
     n_channels = g.num_channels()
 
@@ -106,11 +105,11 @@ def main():
             variables += [f'ch{zpad(i)}_detected', f'ch{zpad(i)}_pte']
     variables += ['time_spent']
 
-    logger = H5Logger('../data/nphoton_scan_2mm.h5', variables)
+    logger = H5Logger(args.output, variables)
 
     # rw = RootWriter(args.output)
     t0 = time.time()
-    bomb = photon_bomb(args.n, 175, photon_pos[0])
+    bomb = photon_bomb(args.N, 175, photon_pos[0])
     for i in tqdm(range(len(photon_pos)), desc='Scanning', total=len(photon_pos)):
         bomb.pos[:] = photon_pos[i]
         t0 = time.time()
@@ -124,18 +123,18 @@ def main():
             out['posX'] = pos[0]
             out['posY'] = pos[1]
             out['posZ'] = pos[2]
-            out['n'] = args.n
+            out['n'] = args.N
 
             detected = len(ev.flat_hits)
             out['detected'] = detected
-            out['pte'] = detected/args.n
+            out['pte'] = detected/args.N
 
             if not args.single_channel:
                 for c in range(n_channels):
                     hits = ev.hits
                     detected = len(hits.get(c, []))
                     out[f'ch{zpad(c)}_detected'] = detected
-                    out[f'ch{zpad(c)}_pte'] = detected/args.n
+                    out[f'ch{zpad(c)}_pte'] = detected/args.N
             t = time.time()
             out['time_spent'] = t-t0
             logger.write(**out)
@@ -144,8 +143,6 @@ def main():
                 logger.close()
                 sys.exit(0)
         t0 = t
-        # rw.write_event(ev)
-    # rw.close()
     logger.close()
 
 
