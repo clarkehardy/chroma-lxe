@@ -19,7 +19,7 @@ parts:
     options:
       is_detector: false
 
-      path: /home/youngsam/sw/chroma-lxe/data/stl/hv_lightmap/EA-HVSetup_noPMTs.STL
+      path: /sdf/home/y/youngsam/sw/dune/nexo/chroma-lxe/data/stl/hv_lightmap/EA-HVSetup_noPMTsnoELECTRODE.STL
 
       # The scale factor to apply to the STL file
       scale: 1.0
@@ -39,12 +39,11 @@ parts:
         material2: lxe   # change me!
         color: 0x00FFFFFF
 
-
-  - name: EA-HV_ch
+  - name: EA-HV_electrodes
     options:
-      is_detector: true
+      is_detector: false
 
-      path: /home/youngsam/sw/chroma-lxe/data/stl/hv_lightmap/EA-HV_ch*.STL
+      path: /sdf/home/y/youngsam/sw/dune/nexo/chroma-lxe/data/stl/hv_lightmap/EA-HV_electrode.STL
 
       # The scale factor to apply to the STL file
       scale: 1.0
@@ -59,7 +58,32 @@ parts:
 
     # Material properties
       material:
-        surface: steel     # change me!
+        surface: polished_steel     # change me!
+        material1: steel   # change me!
+        material2: lxe   # change me!
+        color: 0xFFCC00
+
+
+  - name: EA-HV_ch
+    options:
+      is_detector: true
+
+      path: /sdf/home/y/youngsam/sw/dune/nexo/chroma-lxe/data/stl/hv_lightmap/EA-HV_ch*.STL
+
+      # The scale factor to apply to the STL file
+      scale: 1.0
+
+      # The translation to apply to the STL file
+      translation: [0,0,0]
+
+      # The rotation to apply to the STL file
+      rotation:
+        angle: 0          # in degrees
+        dir: [0,0,1]
+
+    # Material properties
+      material:
+        surface: perfect_detector     # change me!
         material1: steel   # change me!
         material2: lxe   # change me!
         color: 0xFFCC00
