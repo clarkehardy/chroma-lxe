@@ -110,13 +110,22 @@ def main():
     # rw = RootWriter(args.output)
     t0 = time.time()
     bomb = photon_bomb(args.N, 175, photon_pos[0])
+
+    HAS_DET = 0
     for i in tqdm(range(len(photon_pos)), desc='Scanning', total=len(photon_pos)):
         bomb.pos[:] = photon_pos[i]
         t0 = time.time()
-        evs = list(sim.simulate(bomb, keep_photons_beg=False,keep_photons_end=False,max_steps=100,
-                           keep_hits=True,
-                           run_daq=False,
-                           photons_per_batch=50000))
+        evs = list(
+            sim.simulate(
+                bomb,
+                keep_photons_beg=False,
+                keep_photons_end=False,
+                max_steps=100,
+                keep_hits=not args.single_channel,
+                run_daq=False,
+                photons_per_batch=1_000_000,
+            )
+        )
         for ev in evs:
             out = {}
             pos = photon_pos[i]
@@ -126,6 +135,11 @@ def main():
             out['n'] = args.N
 
             detected = len(ev.flat_hits)
+            
+            if detected>0 and not HAS_DET:
+                print(f"Detected {detected} photons!")
+                HAS_DET = 1
+            
             out['detected'] = detected
             out['pte'] = detected/args.N
 
@@ -138,10 +152,7 @@ def main():
             t = time.time()
             out['time_spent'] = t-t0
             logger.write(**out)
-
-            if i == 10:
-                logger.close()
-                sys.exit(0)
+            
         t0 = t
     logger.close()
 
