@@ -63,3 +63,13 @@ def wvl2rgb(wvl):
         g = 0.0
         b = 0.0
     return np.array([r, g, b])
+
+def um2mm(x):
+    """Micron to millimeter conversion"""
+    return x / 1e3
+
+def mm2um(x):
+    """Millimeter to micron conversion"""
+    return x * 1e3
+
+
