@@ -18,7 +18,7 @@ class GeometryCache:
     detector specifications.
     """
     
-    def __init__(self, cache_path: Path = Path("~/.chroma/")):
+    def __init__(self, cache_path: Path = Path("~/.chroma/").expanduser()):
         """Initializes the cache.
         
         Parameters
