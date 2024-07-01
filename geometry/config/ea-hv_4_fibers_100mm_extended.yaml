@@ -15,33 +15,10 @@ target: vacuum
 log: true
 
 parts:
-  - name: EA-HVSetup_noPMTs
-    is_detector: false
+  - name: EA-HV_electrode
+    is_detector: true
 
-    path: /sdf/home/y/youngsam/sw/dune/nexo/chroma-lxe/data/stl/hv_lightmap/EA-HVSetup_noPMTsnoELECTRODE.STL
-
-    # The scale factor to apply to the STL file
-    scale: 1.0
-
-    # The translation to apply to the STL file
-    translation: [0,0,0]
-
-    # The rotation to apply to the STL file
-    rotation:
-      angle: 0          # in degrees
-      dir: [0,0,1]
-
-  # Material properties
-    material:
-      surface: steel     # change me!
-      material1: steel   # change me!
-      material2: lxe   # change me!
-      color: 0x00FFFFFF
-
-  - name: EA-HV_electrodes
-    is_detector: false
-
-    path: /sdf/home/y/youngsam/sw/dune/nexo/chroma-lxe/data/stl/hv_lightmap/EA-HV_electrode.STL
+    path: /home/sam/sw/chroma-lxe/data/stl/electrode_stls/5000_parts/*.stl
 
     # The scale factor to apply to the STL file
     scale: 1.0
@@ -62,10 +39,10 @@ parts:
       color: 0xFFCC00
 
 
-  - name: EA-HV_ch
-    is_detector: true
+  - name: EA-HV_fiber_extended
+    is_detector: false
 
-    path: /sdf/home/y/youngsam/sw/dune/nexo/chroma-lxe/data/stl/hv_lightmap/EA-HV_ch*.STL
+    path: /home/sam/sw/chroma-lxe/data/stl/fibers/EA-HV_fiber_*_100mm.stl
 
     # The scale factor to apply to the STL file
     scale: 1.0
@@ -80,7 +57,32 @@ parts:
 
   # Material properties
     material:
-      surface: perfect_detector     # change me!
+      surface: steel     # change me!
       material1: steel   # change me!
       material2: lxe   # change me!
       color: 0xFFCC00
+
+
+  - name: EA-HV_no_electrode
+    is_detector: false
+
+    path: /home/sam/sw/chroma-lxe/data/stl/EA-HV_no_electrode_plugged.STL
+
+    # The scale factor to apply to the STL file
+    scale: 1.0
+
+    # The translation to apply to the STL file
+    translation: [0,0,0]
+
+    # The rotation to apply to the STL file
+    rotation:
+      angle: 0          # in degrees
+      dir: [0,0,1]
+
+  # Material properties
+    material:
+      surface: steel     # change me!
+      material1: steel   # change me!
+      material2: lxe   # change me!
+      color: 0xC83B3B3B
+
