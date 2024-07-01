@@ -1,37 +1,122 @@
-from ast import arg
+import argparse
+import logging
+import sys
+import time
+from typing import Generator
+
 import chroma
 import numpy as np
-from chroma.event import *
-from chroma.sample import uniform_sphere
-from chroma.event import Photons
+import yaml
+from chroma.event import (
+    Photons,
+    SURFACE_DETECT,
+    NO_HIT,
+    NAN_ABORT,
+    SURFACE_ABSORB,
+    BULK_ABSORB,
+)
+from chroma.loader import load_bvh
+from chroma.sim import Simulation
+from tqdm import tqdm
 
-import logging
+from geometry.fiber import M114L01
+from geometry.builder import build_detector_from_yaml
+from utils.output import H5Logger, print_table
+
+sys.path.append("../geometry")
 
 logging.getLogger("chroma").setLevel(logging.DEBUG)
 
 
-def parse_args():
-    import argparse
+def __configure__(db):
+    """Modify fields in the database here"""
 
-    parser = argparse.ArgumentParser(description="Run a test simulation")
-    # detector yaml. default is the one in the geometry directory
-    parser.add_argument(
-        "-o", "--output", default=None, help="Save events to a root file"
+    db.n_photons_per_fiber = 100_000
+    db.fiber = M114L01
+    db.seed = None
+    db.config_file = (
+        "/home/sam/sw/chroma-lxe/geometry/config/ea-hv_4_fibers_100mm_extended.yaml"
     )
-    # -n or --nphotons
-    parser.add_argument(
-        "-n", type=int, default=100, help="Number of photons to simulate"
+    db.fiber_positions_file = (
+        "/home/sam/sw/chroma-lxe/data/stl/fibers/fiber_positions_100mm_extended.yaml"
     )
-    # number of fibers
-    parser.add_argument(
-        "-f", "--nfibers", type=int, default=1, help="Number of fibers to simulate"
-    )
-    parser.add_argument("--seed", type=int, default=123, help="Random seed")
-    parser.add_argument('--no-cache', action='store_true', help='do not load from cache')
 
-    args = parser.parse_args()
-    return args
+    db.chroma_g4_processes = 0
+    db.chroma_keep_hits = True
+    db.chroma_keep_flat_hits = True
+    db.chroma_photon_tracking = True
+    db.chroma_particle_tracking = False
+    db.chroma_photons_per_batch = 1_000_000
+    db.chroma_max_steps = 100
+    db.chroma_daq = True
+    db.chroma_keep_photons_beg = True
+    db.chroma_keep_photons_end = True
 
+def __define_geometry__(db):
+    """Returns a chroma Detector or Geometry"""
+    geometry = build_detector_from_yaml(db.config_file)
+    geometry.bvh = load_bvh(geometry, read_bvh_cache=True)
+    db.geometry = geometry
+    return geometry
+
+def __event_generator__(db) -> Generator[Photons, None, None]:
+    """A generator to yield chroma Events"""
+    posdir = yaml.safe_load(open(db.fiber_positions_file, "r"))
+    fibers = [
+        db.fiber(
+            position=posdir[f"fiber_{i}"]["position"],
+            direction=posdir[f"fiber_{i}"]["direction"],
+        )
+        for i in range(4)
+    ]
+    for i in range(4):
+        np.set_printoptions(precision=3)
+        # print(fibers[i].rotation_matrix)
+    
+    batch_size = 100_000
+    total_photons = db.n_photons_per_fiber * len(fibers)
+    
+    while total_photons > 0:
+        current_batch = min(batch_size, total_photons)
+        photons_per_fiber = current_batch // len(fibers)
+        remainder = current_batch % len(fibers)
+        
+        batch = Photons()
+        for i, fiber in enumerate(fibers):
+            fiber_photons = photons_per_fiber + (1 if i < remainder else 0)
+            if fiber_photons > 0:
+                batch += fiber.generate_photons(fiber_photons)
+                print('actual direction\n', fiber.direction)
+        yield batch
+        total_photons -= current_batch
+
+def __simulation_start__(db):
+    """Called at the start of the event loop"""
+    total_photons = db.n_photons_per_fiber * 4
+    db.num_events = np.ceil(total_photons / 100_000)
+    db.start_time = time.time()
+    db.total_detected = 0
+    db.total_photons = 0
+
+def __process_event__(db, ev):
+    """Called for each generated event"""
+    detected = (ev.photons_end.flags & SURFACE_DETECT).astype(bool)
+    db.total_detected += detected.sum()
+    db.total_photons += len(detected)
+    print_stats(ev)
+
+
+def __simulation_end__(db):
+    """Called at the end of the event loop"""
+    total_time = time.time() - db.start_time
+    results = dict(
+        n_photons=db.total_photons,
+        n_detected=db.total_detected,
+        pte=db.total_detected / db.total_photons,
+        total_time=total_time,
+        output=db.output
+    )
+    print_table(**results)
 
 def count_test(flags, test, none_of=None):
     if none_of is not None:
@@ -41,13 +126,12 @@ def count_test(flags, test, none_of=None):
     else:
         return np.count_nonzero(np.bitwise_and(flags, test) == test)
 
-
 def print_stats(ev):
     detected = (ev.photons_end.flags & SURFACE_DETECT).astype(bool)
     photon_detection_efficiency = detected.sum() / len(detected)
     print("in event loop")
     print("# detected", detected.sum(), "# photons", len(detected))
-    print("fraction of detected photons: %f" % photon_detection_efficiency)
+    print(f"fraction of detected photons: {photon_detection_efficiency:.4f}")
 
     p_flags = ev.photons_end.flags
     print("\tDetect", count_test(p_flags, SURFACE_DETECT))
@@ -55,68 +139,3 @@ def print_stats(ev):
     print("\tAbort", count_test(p_flags, NAN_ABORT))
     print("\tSurfaceAbsorb", count_test(p_flags, SURFACE_ABSORB))
     print("\tBulkAbsorb", count_test(p_flags, BULK_ABSORB))
-
-
-def main():
-    args = parse_args()
-
-    from chroma.sim import Simulation
-    from chroma.loader import load_bvh
-    from chroma.generator import vertex
-    import yaml
-    import sys
-    from tqdm import tqdm
-
-    sys.path.append("../geometry")
-    from fiber import M114L01
-    from geometry import build_detector_from_yaml
-
-    g = build_detector_from_yaml('../geometry/config/ea-hv_4_fibers.yaml', flat=True, 
-                                 load_cache=not args.no_cache)
-    g.bvh = load_bvh(g, read_bvh_cache=True)
-
-    sim = Simulation(g, geant4_processes=0, seed=args.seed, photon_tracking=True)
-
-    posdir = yaml.safe_load(open('../data/stl/fibers/fiber_positions.yaml', 'r'))
-    fibers = []
-    for i in range(4):
-        fiber = M114L01(
-            position=posdir[f'fiber_{i}']['position'],
-            direction=posdir[f'fiber_{i}']['direction'],
-        )
-        fibers.append(fiber)
-
-    if args.output:
-        from chroma.io.root import RootWriter
-
-        f = RootWriter(args.output, g)
-
-    nbatches = args.n // 500000
-    leftover = args.n % 500000
-    N = [500000] * nbatches + ([leftover] if leftover else [])
-    assert sum(N) == args.n
-
-    for ev in sim.simulate(
-        tqdm([fiber.generate_photons(n) for n in N for fiber in fibers]),
-        keep_photons_beg=False,
-        keep_photons_end=True,
-        run_daq=True,
-        max_steps=100,
-        keep_hits=True,
-    ):
-        print(ev.photons_end.pos.shape)
-        if args.output:
-            f.write_event(ev)
-        print_stats(ev)
-
-    if args.output:
-        f.close()
-
-
-if __name__ == "__main__":
-    # Cprofile
-
-    import cProfile
-
-    # cProfile.run('main()', 'profile.out')
-    main()
