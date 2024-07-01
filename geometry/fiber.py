@@ -1,7 +1,7 @@
 import pickle
 
 import numpy as np
-from fiberbase import BaseFiber
+from geometry.fiberbase import BaseFiber
 
 
 class ExampleFiber(BaseFiber):

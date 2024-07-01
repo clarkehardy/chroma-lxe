@@ -6,8 +6,9 @@ from typing import Tuple, List, Literal
 from scipy.interpolate import interp1d
 from scipy.special import jn
 
-import utils
-
+from utils.mesh import cylinder
+from utils.mesh import um2mm, mm2um
+from utils.mesh import gen_rot
 
 class FiberMeta(type(BaseModel)):
     def __new__(mcs, name, bases, namespace):
@@ -73,18 +74,18 @@ class BaseFiber(BaseModel, metaclass=FiberMeta):
         if not hasattr(self.__class__, "_cdf"):
             _cdf = np.cumsum(self.intensity)
             _cdf /= _cdf[-1]
-            self.__class__._cdf = _cdf
-        return self.__class__._cdf
+            self._cdf = _cdf
+        return self._cdf
 
     @property
     def rotation_matrix(self):
         if not hasattr(self.__class__, "_rotation_matrix"):
-            _rotation_matrix = utils.gen_rot([0, 0, 1], self.direction)
-            self.__class__._rotation_matrix = _rotation_matrix
-        return self.__class__._rotation_matrix
+            _rotation_matrix = gen_rot([0, 0, 1], self.direction)
+            self._rotation_matrix = _rotation_matrix
+        return self._rotation_matrix
 
     def _initialize_properties(self):
-        self.diameter = utils.um2mm(self.diameter)  # chroma uses mm
+        self.diameter = um2mm(self.diameter)  # chroma uses mm
         self.direction = np.array(self.direction)
         self.position = np.array(self.position)
 
@@ -178,7 +179,9 @@ class BaseFiber(BaseModel, metaclass=FiberMeta):
              np.cos(theta)),
             axis=-1,
         )
-        directions /= np.linalg.norm(directions, axis=1)[:, np.newaxis]
+        dirr = np.dot(directions, self.rotation_matrix.T)
+        print('sampled direction pre-rotation\n', directions[0])
+        print('sampled direction post-rotation\n', dirr[0])
         return np.dot(directions, self.rotation_matrix.T)
 
     def generate_photons(self, num_photons: int) -> Photons:
@@ -230,7 +233,7 @@ class BaseFiber(BaseModel, metaclass=FiberMeta):
 
         cyls = []
         for i, (pos, dir) in enumerate(zip(phots.pos, phots.dir)):
-            cyl = utils.cylinder(pos, 0.01, 20, dir)
+            cyl = cylinder(pos, 0.01, 20, dir)
             cyl.visual.face_colors = colors[i]
             cyls.append(cyl)
         return trimesh.util.concatenate(cyls) + axis if concatenate else cyls + [axis]
@@ -265,7 +268,7 @@ def main():
     print("\tavg. wavelength:", np.mean(photons.wavelengths))
     print("\tmax. wavelength:", np.max(photons.wavelengths))
     print("\tmin. wavelength:", np.min(photons.wavelengths))
-    radii = utils.mm2um(np.linalg.norm(photons.pos[:, :2], axis=1))
+    radii = mm2um(np.linalg.norm(photons.pos[:, :2], axis=1))
     print("\tavg. radius:", radii.mean(), "um")
     print("\tmax. radius:", radii.max(), "um")
     print("\tmin. radius:", radii.min(), "um")

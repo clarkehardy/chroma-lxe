@@ -1,6 +1,7 @@
 from __future__ import annotations
 import matplotlib.colors as mcolors
 from difflib import get_close_matches
+import numpy as np
 
 class MatplotlibColorError(Exception):
     pass
@@ -17,7 +18,7 @@ def from_matplotlib(color_name: str | int, alpha=1.0):
 
         # Convert RGB (0-1 scale) to 0-255 scale and include full alpha
         r, g, b = [int(x * 255) for x in rgb]
-        a = int(alpha * 255)
+        a = int((1-alpha) * 255)
 
         # Format as 0xAARRGGBB
         return int(f"0x{a:02X}{r:02X}{g:02X}{b:02X}", 16)
@@ -25,17 +26,17 @@ def from_matplotlib(color_name: str | int, alpha=1.0):
         suggestions = suggest_color(color_name)
         if suggestions:
             raise MatplotlibColorError(
-                f"Invalid color name: {color_name}. Did you mean {', '.join(suggestions)}?"
+                f"Invalid color name: {color_name}. Did you mean {suggestions}?"
             ) from e
         else:
             raise MatplotlibColorError(f"Invalid color name: {color_name}.") from e
 
-def format_color(color_name: str | int, alpha=1.0):
-    if isinstance(color_name, int):
-        return color_name
-    if color_name.startswith("0x"):
-        return int(color_name, 16)
-    return from_matplotlib(color_name, alpha)
+def format_color(color: str | int, alpha=1.0):
+    if isinstance(color, int):
+        return color
+    if color.startswith("0x"):
+        return int(color, 16)
+    return from_matplotlib(color, alpha)
 
 # Example usage
 if __name__ == "__main__":    
@@ -65,3 +66,32 @@ if __name__ == "__main__":
             print(f"{user_color}: {as_hex}")
         else:
             print(f"{user_color}: Invalid color name")
+
+def wvl2rgb(wvl):
+    if wvl < 380 or wvl > 780:
+        raise ValueError("Wavelength must be between 380 and 780 nm")
+    if wvl < 440:
+        r = -(wvl - 440) / (440 - 380)
+        g = 0.0
+        b = 1.0
+    elif wvl < 490:
+        r = 0.0
+        g = (wvl - 440) / (490 - 440)
+        b = 1.0
+    elif wvl < 510:
+        r = 0.0
+        g = 1.0
+        b = -(wvl - 510) / (510 - 490)
+    elif wvl < 580:
+        r = (wvl - 510) / (580 - 510)
+        g = 1.0
+        b = 0.0
+    elif wvl < 645:
+        r = 1.0
+        g = -(wvl - 645) / (645 - 580)
+        b = 0.0
+    else:
+        r = 1.0
+        g = 0.0
+        b = 0.0
+    return np.array([r, g, b])

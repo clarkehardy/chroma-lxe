@@ -1,4 +1,7 @@
+#!/usr/bin/env python
+
 from __future__ import annotations
+
 import glob
 import logging
 from dataclasses import dataclass
@@ -6,18 +9,21 @@ from pathlib import Path
 from typing import List
 
 import chroma.make as make
-import materials
 import numpy as np
-import surfaces
 import utils
 import yaml
-from bbox import BBox
-from cache import GeometryCache
 from chroma import geometry
 from chroma.camera import EventViewer
 from chroma.detector import Detector
 from chroma.loader import create_geometry_from_obj, mesh_from_stl
 from chroma.transform import make_rotation_matrix
+
+from geometry.bbox import BBox
+import geometry.surfaces as surfaces
+import geometry.materials as materials
+from geometry.cache import GeometryCache
+from utils.color import format_color
+from utils.mesh import gen_rot
 
 __all__ = ["build_detector_from_yaml", "build_detector_from_config"]
 
@@ -137,7 +143,7 @@ def build_detector_from_config(config: DetectorConfig, flat: bool = True) -> Det
 
 
 def build_detector_parts(detector: Detector, config: DetectorConfig) -> BBox:
-    """Builds and adds parts to the detector. Returns the bounding box of all parts."""
+    """Builds and adds individual parts to the detector. Returns the bounding box of all parts."""
 
     solid_bbox = BBox()
     for i, part in enumerate(config.parts, 1):
@@ -174,7 +180,8 @@ def prepare_material_kwargs(material_config: dict) -> dict:
     for keyword in ("material1", "material2", "surface"):
         lib = materials if "material" in keyword else surfaces
         material_kwargs[keyword] = getattr(lib, material_config[keyword])
-    material_kwargs["color"] = material_config.get("color", 0xFFFFFF)
+    material_kwargs["color"] = format_color(color=material_config.get("color", "grey"),
+                                            alpha=material_config.get("alpha", 0.25))
     return material_kwargs
 
 
@@ -188,7 +195,7 @@ def add_cavity_from_bbox(
     """Creates a cylindrical envelope around the detector using the bounding box of the detector."""
 
     cavity = make.cylinder_along_z(bbox.extent.max(), 2 * bbox.extent.max())
-    rot_normal = utils.gen_rot([0, 0, 1], np.eye(3)[bbox.extent.argmax()])
+    rot_normal = gen_rot([0, 0, 1], np.eye(3)[bbox.extent.argmax()])
     solid = geometry.Solid(
         cavity, material1, material2, surface=surface, color=0xF0CCCCCC
     )
@@ -206,7 +213,7 @@ if __name__ == "__main__":
         "--no-cache", action="store_true", help="do not load from cache"
     )
     parser.add_argument(
-        "-i", "--input", type=str, help="path to the event file (ROOT) to visualize"
+        "-i", "--input_root", type=str, help="path to the event file (ROOT) to visualize"
     )
 
     args = parser.parse_args()

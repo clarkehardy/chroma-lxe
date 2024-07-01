@@ -3,10 +3,11 @@ from rich.table import Table
 
 import h5py
 import os
-from log import logger
+from .log import logger
+from typing import List
 
 class H5Logger:
-    def __init__(self, filename, variables):
+    def __init__(self, filename: str, variables: List[str]):
         self.filename = filename
         self.variables = variables
 
@@ -15,7 +16,7 @@ class H5Logger:
             os.remove(filename)
         self.f = h5py.File(filename, "a")
 
-        for var in variables:
+        for var in self.variables:
             if var not in self.f:
                 self.f.create_dataset(var, (0,), maxshape=(None,), dtype="f")
 
@@ -28,7 +29,6 @@ class H5Logger:
     def close(self):
         self.f.close()
 
-
 def print_table(**kwargs):
     """Print a summary table of the simulation"""
     console = Console()
@@ -38,4 +38,3 @@ def print_table(**kwargs):
     for key, value in kwargs.items():
         table.add_row(key, str(value))
     console.print(table)
-
