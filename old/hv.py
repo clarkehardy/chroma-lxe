@@ -1,8 +1,6 @@
-]import chroma
+import chroma
 import numpy as np
 from chroma.event import *
-from chroma.sample import uniform_sphere
-from chroma.event import Photons
 
 import logging
 
