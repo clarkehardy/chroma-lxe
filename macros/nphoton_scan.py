@@ -25,6 +25,7 @@ def __configure__(db):
     db.n_photons = 100_000
     db.single_channel = False
     db.output_file = "test.h5"
+    db.wavelength = 175
     db.positions_path = (
         "/home/sam/sw/chroma-lxe/data/lightmap_points_2.5mm_orthofill.npy"
     )
@@ -34,9 +35,6 @@ def __configure__(db):
     db.chroma_keep_hits = not db.single_channel
     db.chroma_keep_flat_hits = True
     db.chroma_photon_tracking = db.dry
-    db.chroma_particle_tracking = False
-    db.chroma_photons_per_batch = 1_000_000
-    db.chroma_max_steps = 100
     db.chroma_daq = db.dry
     db.chroma_keep_photons_beg = db.dry
     db.chroma_keep_photons_end = db.dry
@@ -52,7 +50,7 @@ def __event_generator__(db):
     """A generator to yield chroma Events (or something a chroma Simulation can
     convert to a chroma Event)."""
     yield from (
-        create_photon_bomb(db.n_photons, 175, position)
+        create_photon_bomb(db.n_photons, db.wavelength, position)
         for position in db.photon_positions
     )
 
