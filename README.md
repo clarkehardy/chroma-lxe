@@ -177,8 +177,8 @@ Below is the process for creating a detector definition a SolidWorks:
 
 1. Open the CAD file in SolidWorks
 2. Select the parts you want to save
-3. Right click and select `Invert Selection` <img src="assets/invert_selection.jpg" alt="drawing" height=20/>
-4. Right click on any of the inverted selection and select `Hide Components` <img src="assets/hide_components.jpg" alt="drawing" height=20/>
+3. Right click and select `Invert Selection`
+4. Right click on any of the inverted selection and select `Hide Components`
 5. Click File > Save as > Save as type: STL > Options > Unit: Millimeters > Save all components of an assembly in a single file > OK > Save
 6. Repeat steps 2-5 for each part you want to save.
 
@@ -374,4 +374,4 @@ The PyTorch checkpoints as well as pertinent data (loss, PTE/visibility bias) wi
 
 ## Contact
 
-For any questions or suggestions, please open an issue in this repository or email me at [youngsam@stanford.edu](mailto:youngsam@stanford.edu). I'm very happy to help.
+For any questions, please open an issue in this repository or email me at [youngsam@stanford.edu](mailto:youngsam@stanford.edu). I'm very happy to help.
