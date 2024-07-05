@@ -14,9 +14,10 @@ PREAMBLE = """
 #             is a separate STL file. Each part can have its own material
 #             properties, and can be marked as a detector or not.
 #
-#             Colors are specified in hexadecimal format, with the alpha
-#             channel as the first two digits, followed by red, green, and
-#             blue. I.e., 0xAARRGGBB.
+#             Colors can be specified in hexadecimal, e.g. 0x00ff00 for green,
+#             as a string, e.g. 'green', or as a uint32, e.g. 0x00ff00ff for
+#             green with full opacity. All matplotlib colors are supported.
+#
 """
 
 DETLEVEL_FORMAT = """
