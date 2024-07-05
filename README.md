@@ -1,5 +1,9 @@
 # Chroma-LXE
 
+<p align="center">
+<img src="assets/tpcs.png" alt="drawing"/>
+</p>
+
 Chroma-LXE provides a set of tools for modeling and analyzing the behavior of photons in liquid xenon detectors using [chroma](https://github.com/benland100/chroma) simulation framework. It includes:
 
 - Scaffolding for defining custom geometries and materials.
