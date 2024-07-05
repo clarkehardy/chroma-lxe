@@ -113,12 +113,13 @@ Note that `env.sh` adds the `chroma-lxe` directory to your `PYTHONPATH`. This al
     - [`h5_to_plib.py`](macros/h5_to_plib.py): Macro that converts a HDF5 file outputted by `nphoton_scan.py` to a photonlib file for ease of use. See [`notebooks/hv_lightmap.ipynb`](notebooks/hv_lightmap.ipynb) for an example of how to use photonlib files.
     - [`hv.py`](macros/hv.py): Macro showing fiber optic light source simulation in the high voltage setup at the Gratta lab.
     - [`sample_sim.py`](macros/sample_sim.py): Sample barebones simulation file for you to modify.
+    - [`materials_checker.py`](macros/materials_checker.py): Macro for visualizing what chroma will think is `material1` (inner material, yellow) and `material2` (outer material, green) if you were to use a specific STL.
 - [`notebooks/`](notebooks/): Jupyter Notebooks demonstrating usage and examples.
     - [`generate_positions.ipynb`](notebooks/generate_positions.ipynb): Demonstrates how to use `trimesh` to generate lightmap positions within a detector.
     - [`hv_lightmap.ipynb`](notebooks/hv_lightmap.ipynb): Demonstrates how to interact with a photonlib file and visualize the lightmap.
     - [`hv_events.ipynb`](notebooks/hv_events.ipynb): Demonstrates how to use the `chroma`-generated ROOT output files to visualize PTE on a 3D mesh.
     - [`segment_electrode.ipynb`](notebooks/segment_electrode.ipynb): Notebook used to segment a single STL file containing an electrode into many smaller STL files to see the position-based response of the detector.
-    - [`materials_checker.ipynb`](notebooks/materials_checker.ipynb): Notebook for visualizing what chroma will think is `material1` (inner material, yellow) and `material2` (outer material, green) if you were to use a specific STL.
+    - [`materials_checker.ipynb`](notebooks/materials_checker.ipynb): Same functionality as `materials_checker.py`, but in a notebook. Uses `trimesh` instead of Chroma to visualize the inside and outside materials.
 
 ## Geometries
 
