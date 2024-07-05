@@ -181,7 +181,8 @@ Below is the process for creating a detector definition a SolidWorks:
 3. Right click and select `Invert Selection`
 4. Right click on any of the inverted selection and select `Hide Components`
 5. Click File > Save as > Save as type: STL > Options > Unit: Millimeters > Save all components of an assembly in a single file > OK > Save
-6. Repeat steps 2-5 for each part you want to save.
+6. Undo `Hide Components`
+7. Repeat steps 2-5 for each part you want to save.
 
 After you have all the STLs you need, you can use the `config_from_stl.py` macro to generate a template detector definition YAML file:
 
@@ -225,7 +226,7 @@ parts:
       material1: ceramic
       material2: lxe
       color: orangered
-    ...
+  ...
 ```
 
 A YAML file (an easy to use json-like filetype) is used to define the geometry of the detector. The geometry is defined by a list of _parts_, each of which is a separate STL file(s). Each part can has its own material and surface properties, and can be marked as a detector or not. 
