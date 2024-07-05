@@ -1,9 +1,21 @@
 import torch
 from utils.log import logger
-from chroma.geometry import Mesh
 
 
 def explode_mesh_gpu(mesh, explode_coeff=1.0):
+    """
+    Applies an explosion effect to a mesh by offsetting its vertices along the surface normals.
+
+    Args:
+        mesh: The input mesh object. It can be either a trimesh.Trimesh or a chroma.geometry.Mesh.
+        explode_coeff: The coefficient controlling the magnitude of the explosion effect. Default is 1.0.
+
+    Returns:
+        A dictionary containing the exploded mesh data. The dictionary has the following keys:
+        - 'vertices': A numpy array of shape (N, 3) representing the exploded vertices.
+        - 'faces' or 'triangles': A numpy array of shape (M, 3) representing the exploded faces or triangles,
+          depending on the type of the input mesh object.
+    """
     # Move data to GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
