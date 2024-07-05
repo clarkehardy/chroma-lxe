@@ -318,10 +318,10 @@ With this new file we can now easily access and visualize the lightmap data in p
 
 Sinusoidal representation networks ([SIREN](https://www.vincentsitzmann.com/siren/)) are neural networks that can be used to learn the lightmap. It's a regular fully connected neural network that maps coordinate positions in $\mathbb{R}^3$ to PTE values for each channel in $\mathbb{R}^{N_\text{detector}}$, but instead of using ReLU or Sigmoid activations, it uses a sinusoid activation. I.e., the model $\Phi$ is constructed as
 
-$$
-    \Phi(\mathbf{x}) = \textbf{W}_n(\phi_{n-1}\circ\phi_{n-2}\circ\cdots\circ\phi_0)(\textbf{x}) + \textbf{b}_n, \\
-    \textbf{x}_i \mapsto \phi_i(\textbf{x}_i) = \sin(\textbf{W}_i\textbf{x}_i + \textbf{b}_i),
-$$
+```math
+\Phi(\mathbf{x}) = \textbf{W}_n(\phi_{n-1}\circ\phi_{n-2}\circ\cdots\circ\phi_0)(\textbf{x}) + \textbf{b}_n, \\
+\textbf{x}_i \mapsto \phi_i(\textbf{x}_i) = \sin(\textbf{W}_i\textbf{x}_i + \textbf{b}_i),
+```
 
 where at the $i^{th}$ layer of the network, an affine transform defined by the weight matrix $\textbf{W}_i$ and bias $\textbf{b}_i$ is applied on the input (coordinates in our case) $\textbf{x}_i$.
 
