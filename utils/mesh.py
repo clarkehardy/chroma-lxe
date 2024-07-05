@@ -1,6 +1,20 @@
 import numpy as np
 
-def gen_rot(a,b):
+def gen_rot(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    """Generate a rotation matrix that rotates vector a to vector b.
+    
+    Parameters
+    ----------
+    a : array-like
+        The vector to be rotated.
+    b : array-like
+        The target vector.
+        
+    Returns
+    -------
+    R : array-like
+        The rotation matrix that rotates vector a to vector b.
+    """
     a = np.array(a)
     b = np.array(b)
     
@@ -35,8 +49,26 @@ def gen_rot(a,b):
     return R
 
 
-def cylinder(begin, radius, length, direction):
-    """Create a cylinder with a given radius, length, and direction. Return a trimesh object."""
+def cylinder(begin: np.ndarray, radius: float, length: float, direction: np.ndarray):
+    """Create a cylinder with a given radius, length, and direction.
+    
+    Parameters
+    ----------
+    begin : array-like
+        The beginning position of the cylinder.
+    radius : float
+        The radius of the cylinder.
+    length : float
+        The length of the cylinder.
+    direction : array-like
+        The direction of the cylinder.
+        
+    Returns
+    -------
+    cylinder : trimesh.Trimesh
+        The cylinder mesh.
+
+    """
     import trimesh
 
     # create a cylinder
