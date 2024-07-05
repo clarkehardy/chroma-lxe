@@ -99,7 +99,7 @@ if __name__ == '__main__':
         from chroma import Camera, EventViewer
         if isinstance(args.vis, str):
             print('Viewing ' + args.vis)
-            camera = EventViewer(geom, args.vis, size=(1500,1500))
+            camera = EventViewer(geom, args.vis, size=(1000,1000))
             camera.photons_max = db.viewer_photons_max
             # camera.photons_max_steps = db.viewer_photons_max_steps
             # camera.photons_only_type = db.viewer_photons_only_type
