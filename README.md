@@ -194,6 +194,39 @@ Then, you can finally edit the YAML file to assign the correct materials and sur
 
 ### Defining the detector
 
+```yaml
+# Example detector definition file
+
+target: vacuum
+log: true
+
+parts:
+  - name: sipm_tiles
+    is_detector: true
+
+    # Note: each file in the path will be loaded as a separate part with its own channel!
+    path: "/home/sam/sw/chroma-lxe/data/stl/sipm_channels/*.STL"
+
+    # The scale factor to apply to the STL file
+    scale: 1.0
+
+    # The rotation to apply to the STL file
+    rotation:
+      dir: [0.0, 0.0, 0.0]
+      angle: 0.0  # in degrees
+
+    # The translation to apply to the STL file
+    translation: [-34.103, -62.519, -34.15]
+
+    # material properties
+    material:
+      surface: perfect_detector
+      material1: ceramic
+      material2: lxe
+      color: orangered
+    ...
+```
+
 A YAML file (an easy to use json-like filetype) is used to define the geometry of the detector. The geometry is defined by a list of _parts_, each of which is a separate STL file(s). Each part can has its own material and surface properties, and can be marked as a detector or not. 
 
 Each part can also be translated and rotated in 3D space. The translation is defined by a 3D vector, and the rotation is defined by an axis of rotation and an angle in degrees. If you used the method above to create your STL files, they should be oriented correctly and you shouldn't need to translate or rotate them.
