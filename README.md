@@ -6,10 +6,11 @@
 
 Chroma-LXE provides a set of tools for modeling and analyzing the behavior of photons in liquid xenon detectors using [chroma](https://github.com/benland100/chroma) simulation framework. It includes:
 
-- Scaffolding for defining custom geometries and materials.
+- Scaffolding for defining custom geometries and materials using CAD-derived STL files
 - Tools to create, save, and use light maps in the detector
 - Utilities for visualizing the detector geometry and photon trajectories.
-- A collection of Jupyter Notebooks demonstrating how to use the toolkit.
+- Training a [SIREN](https://www.vincentsitzmann.com/siren/)-based neural network to learn the lightmap of the detector.
+- A couple of demonstration Jupyter Notebooks.
 
 `chroma-lxe` allows for the simulation of complex geometries with arbitrary detector configurations, materials, and surfaces using the [chroma](https://github.com/benland100/chroma) simulation framework, a CUDA-based fast optical propagator with relevant physics processes. From the original repo,
 
@@ -108,8 +109,8 @@ Note that `env.sh` adds the `chroma-lxe` directory to your `PYTHONPATH`. This al
 - `installation/`: Contains container definitions for Docker and Singularity that can be used to build the chroma container from scratch.
 - `macros/`: Python scripts that can do little tasks or run full simulations
     - `config_from_stl.py`: Macro that generates a template detector definition YAML file from a list of STL files. 
-    - `nphoton_scan.py`: Macro that creates a light map for a detector configuration by scanning over many positions and simulating photon bombs.
-    - `h5_to_plib.py`: Macro that converts a HDF5 file outputted by `nphoton_scan.py` to a photonlib file for ease of use. See [notebooks/hv_lightmap.ipynb](notebooks/hv_lightmap.ipynb) for an example of how to use photonlib files.
+    - `lightmap.py`: Macro that creates a light map for a detector configuration by scanning over many positions and simulating photon bombs.
+    - `h5_to_plib.py`: Macro that converts a HDF5 file outputted by `lightmap.py` to a photonlib file for ease of use. See [notebooks/hv_lightmap.ipynb](notebooks/hv_lightmap.ipynb) for an example of how to use photonlib files.
     - `hv.py`: Macro showing fiber optic light source simulation in the high voltage setup at the Gratta lab.
     - `sample_sim.py`: Sample barebones simulation file for you to modify.
 
@@ -280,10 +281,12 @@ and load additional properties. The pyrat executable defines `--set` and
 
 ### Creating a light map
 
+To create a light map, you need to define a set of positions where you want to simulate photon bombs. You can use the [`generate_positions.ipynb`](notebooks/generate_positions.ipynb) notebook to generate a set of positions within a detector. This notebook uses the `trimesh` package to generate random positions within a detector volume. The notebook will output a numpy array of positions that you can use in the `lightmap.py` macro.
+
 Given a detector definition and a set of positions saved as a numpy array, you can create a light map with 1m isotropic 175 nm photons at each position via:
 
 ```bash
-pyrat macros/nphoton_scan.py \
+pyrat macros/lightmap.py \
     -s positions_path /path/to/positions.npy \
     -s config_file /path/to/detector.yaml \
     -s output_file /path/to/lightmap.h5 \
