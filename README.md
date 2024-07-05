@@ -100,26 +100,25 @@ Note that `env.sh` adds the `chroma-lxe` directory to your `PYTHONPATH`. This al
 
 ## Repository Structure
 
-- `bin/`: Contains executable scripts.
-- `data/`: Stores input data for simulations. Think STL files, lightmap coordinates, light spectra, etc.
-- `geometry/`: Defines geometrical configurations for the simulations. 
-    - `builder.py`: Code for building a detector geometry from YAML-based configuration files. `build_detector_from_yaml` is the main function here.
-    - `fiber.py`: Classes for defining optical fiber sources. 
-    - `materials.py`, `surfaces.py`: Definitions for materials and surfaces. Materials and surfaces used in detector definitions must be defined here.
-- `installation/`: Contains container definitions for Docker and Singularity that can be used to build the chroma container from scratch.
-- `macros/`: Python scripts that can do little tasks or run full simulations
-    - `config_from_stl.py`: Macro that generates a template detector definition YAML file from a list of STL files. 
-    - `lightmap.py`: Macro that creates a light map for a detector configuration by scanning over many positions and simulating photon bombs.
-    - `h5_to_plib.py`: Macro that converts a HDF5 file outputted by `lightmap.py` to a photonlib file for ease of use. See [notebooks/hv_lightmap.ipynb](notebooks/hv_lightmap.ipynb) for an example of how to use photonlib files.
-    - `hv.py`: Macro showing fiber optic light source simulation in the high voltage setup at the Gratta lab.
-    - `sample_sim.py`: Sample barebones simulation file for you to modify.
-
-- `notebooks/`: Jupyter Notebooks demonstrating usage and examples.
-    - `generate_positions.ipynb`: Demonstrates how to use `trimesh` to generate lightmap positions within a detector.
-    - `hv_lightmap.ipynb`: Demonstrates how to interact with a photonlib file and visualize the lightmap.
-    - `hv_events.ipynb`: Demonstrates how to use the `chroma`-generated ROOT output files to visualize PTE on a 3D mesh.
-    - `segment_electrode.ipynb`: Notebook used to segment a single STL file containing an electrode into many smaller STL files to see the position-based response of the detector.
-    - `materials_checker.ipynb`: Notebook for visualizing what chroma will think is `material1` (inner material, yellow) and `material2` (outer material, green) if you were to use a specific STL.
+- [`bin/`](bin/): Contains executable scripts.
+- [`data/`](data/): Stores input data for simulations. Think STL files, lightmap coordinates, light spectra, etc.
+- [`geometry/`](geometry/): Defines geometrical configurations for the simulations. 
+    - [`builder.py`](geometry/builder.py): Code for building a detector geometry from YAML-based configuration files. `build_detector_from_yaml` is the main function here.
+    - [`fiber.py`](geometry/fiber.py): Classes for defining optical fiber sources. 
+    - [`materials.py`](geometry/materials.py), [`surfaces.py`](geometry/surfaces.py): Definitions for materials and surfaces. Materials and surfaces used in detector definitions must be defined here.
+- [`installation/`](installation/): Contains container definitions for Docker and Singularity that can be used to build the chroma container from scratch.
+- [`macros/`](macros/): Python scripts that can do little tasks or run full simulations
+    - [`config_from_stl.py`](macros/config_from_stl.py): Macro that generates a template detector definition YAML file from a list of STL files. 
+    - [`nphoton_scan.py`](macros/nphoton_scan.py): Macro that creates a light map for a detector configuration by scanning over many positions and simulating photon bombs.
+    - [`h5_to_plib.py`](macros/h5_to_plib.py): Macro that converts a HDF5 file outputted by `nphoton_scan.py` to a photonlib file for ease of use. See [`notebooks/hv_lightmap.ipynb`](notebooks/hv_lightmap.ipynb) for an example of how to use photonlib files.
+    - [`hv.py`](macros/hv.py): Macro showing fiber optic light source simulation in the high voltage setup at the Gratta lab.
+    - [`sample_sim.py`](macros/sample_sim.py): Sample barebones simulation file for you to modify.
+- [`notebooks/`](notebooks/): Jupyter Notebooks demonstrating usage and examples.
+    - [`generate_positions.ipynb`](notebooks/generate_positions.ipynb): Demonstrates how to use `trimesh` to generate lightmap positions within a detector.
+    - [`hv_lightmap.ipynb`](notebooks/hv_lightmap.ipynb): Demonstrates how to interact with a photonlib file and visualize the lightmap.
+    - [`hv_events.ipynb`](notebooks/hv_events.ipynb): Demonstrates how to use the `chroma`-generated ROOT output files to visualize PTE on a 3D mesh.
+    - [`segment_electrode.ipynb`](notebooks/segment_electrode.ipynb): Notebook used to segment a single STL file containing an electrode into many smaller STL files to see the position-based response of the detector.
+    - [`materials_checker.ipynb`](notebooks/materials_checker.ipynb): Notebook for visualizing what chroma will think is `material1` (inner material, yellow) and `material2` (outer material, green) if you were to use a specific STL.
 
 ## Geometries
 
