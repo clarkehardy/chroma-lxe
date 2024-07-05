@@ -100,7 +100,7 @@ Note that `env.sh` adds the `chroma-lxe` directory to your `PYTHONPATH`. This al
 
 ## Repository Structure
 
-- [`bin/`](bin/): Contains executable scripts.
+- [`bin/download_short_tpc_stl.sh`](bin/download_short_tpc_stl.sh): Script to download the STL files for the short TPC from the Gratta lab.
 - [`data/`](data/): Stores input data for simulations. Think STL files, lightmap coordinates, light spectra, etc.
 - [`geometry/`](geometry/): Defines geometrical configurations for the simulations. 
     - [`builder.py`](geometry/builder.py): Code for building a detector geometry from YAML-based configuration files. `build_detector_from_yaml` is the main function here.
