@@ -235,7 +235,7 @@ Each part can also be translated and rotated in 3D space. The translation is def
 
 Each part is assigned a material1 (inner material), material2 (outer material), and surface. The material is defined by the `material1` and `material2` fields, and the surface is defined by the `surface` field. The materials and surfaces must be defined in the `geometry/materials.py` and `geometry/surfaces.py` files, respectively. 
 
-Optionally, you can also color the part by specifying a color and alpha in the `color` and `alpha` fields. The color can be specified as a hex code (e.g., #ffffff), a string (e.g., 'red', 'blue', etc.). All matplotlib colors are available. The alpha is a float between 0 and 1, where 0 is fully transparent and 1 is fully opaque. If color and alpha are not specified, the part will be colored grey with an alpha of 0.25.
+Optionally, you can also color the part by specifying a color and alpha in the `color` and `alpha` fields. The color can be specified as a hex code (e.g., #ffffff), a string (e.g., 'red', 'blue', etc.). All matplotlib colors are available. The alpha is a float between 0 and 1, where 0 is fully transparent and 1 is fully opaque.
 
 At the top of the file, you will need to define a target medium. This is the medium that the detector is submerged in. As a precaution, all parts are encapsulated by a bounding box that is filled with the target medium. This is to ensure that all photons are absorbed by the target medium and not lost to the void. If your detector volume's edge is fully opaque (e.g., steel), this won't matter so you can set this to any material (i.e., `vacuum`).
 
