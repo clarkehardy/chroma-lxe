@@ -220,7 +220,7 @@ if __name__ == "__main__":
 
     g = build_detector_from_yaml(args.yaml, load_cache=not args.no_cache)
 
-    if args.input is None:
+    if args.input_root is None:
         from chroma.camera import Camera
 
         cam = Camera(g)

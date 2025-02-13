@@ -53,6 +53,12 @@ lxe.set('absorption_length', 1E100) #according to https://arxiv.org/pdf/physics/
 lxe.set('scattering_length', 350.0) #according to figure 3.9 in https://pure.royalholloway.ac.uk/portal/files/29369028/2018GraceEPHD.pdf
 lxe.density = 2.942  # according to https://userswww.pd.infn.it/~conti/images/LXe/density_vs_T.gif
 #***************************************************************************
+gxe = Material('gxe')
+gxe.set('refractive_index', 1.0000725) # according to https://www.sciencedirect.com/science/article/pii/0022407381900571
+gxe.set('absorption_length', 1E100)
+gxe.set('scattering_length', 1E100)
+gxe.density = 0.012887 # from NIST at 170 K
+#***************************************************************************
 full_absorb = Material('full_absorb')
 full_absorb.set('absorb', 1)
 full_absorb.set('refractive_index', 1.5)

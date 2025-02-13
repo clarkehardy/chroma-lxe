@@ -98,3 +98,11 @@ reflect0.set('reflect_specular', 0.05)
 #***************************************************************************
 perfect_detector = Surface('perfect_detector')
 perfect_detector.set('detect', 1.0)
+#***************************************************************************
+lxe = Surface('lxe')
+lxe.set('detect', 0)
+lxe.set('absorb', 0)
+lxe.set('reflect_diffuse', 0)
+lxe.set('reflect_specular', 0)
+lxe.transmissive = 1.0
+lxe.thickness = 0.0
