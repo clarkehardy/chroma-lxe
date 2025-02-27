@@ -29,9 +29,9 @@ parts:
       material2: gxe
       color: silver
 
-  - name: PMT1_shifted
+  - name: SiPMSurface1
     is_detector: true
-    path: /home/clarke/stl/PMT1_shifted.stl
+    path: /home/clarke/stl/SiPMSurface1.stl
     scale: 1.0
     translation: [0,0,0]
     rotation:
@@ -39,13 +39,13 @@ parts:
       dir: [0,0,1]
     material:
       surface: fulldetect
-      material1: SiO2
+      material1: full_absorb
       material2: gxe
       color: orange
 
-  - name: PMT2_shifted
+  - name: SiPMSurface2
     is_detector: true
-    path: /home/clarke/stl/PMT2_shifted.stl
+    path: /home/clarke/stl/SiPMSurface2.stl
     scale: 1.0
     translation: [0,0,0]
     rotation:
@@ -53,13 +53,13 @@ parts:
       dir: [0,0,1]
     material:
       surface: fulldetect
-      material1: SiO2
+      material1: full_absorb
       material2: gxe
-      color: blue
+      color: orange
 
-  - name: PMT3_shifted
+  - name: SiPMSurface3
     is_detector: true
-    path: /home/clarke/stl/PMT3_shifted.stl
+    path: /home/clarke/stl/SiPMSurface3.stl
     scale: 1.0
     translation: [0,0,0]
     rotation:
@@ -67,13 +67,13 @@ parts:
       dir: [0,0,1]
     material:
       surface: fulldetect
-      material1: SiO2
+      material1: full_absorb
       material2: gxe
-      color: green
+      color: orange
 
-  - name: PMT4_shifted
+  - name: SiPMSurface4
     is_detector: true
-    path: /home/clarke/stl/PMT4_shifted.stl
+    path: /home/clarke/stl/SiPMSurface4.stl
     scale: 1.0
     translation: [0,0,0]
     rotation:
@@ -81,9 +81,79 @@ parts:
       dir: [0,0,1]
     material:
       surface: fulldetect
-      material1: SiO2
+      material1: full_absorb
       material2: gxe
-      color: red
+      color: orange
+
+  - name: SiPMSurface5
+    is_detector: true
+    path: /home/clarke/stl/SiPMSurface5.stl
+    scale: 1.0
+    translation: [0,0,0]
+    rotation:
+      angle: 0
+      dir: [0,0,1]
+    material:
+      surface: fulldetect
+      material1: full_absorb
+      material2: gxe
+      color: orange
+  
+  - name: SiPMSurface6
+    is_detector: true
+    path: /home/clarke/stl/SiPMSurface6.stl
+    scale: 1.0
+    translation: [0,0,0]
+    rotation:
+      angle: 0
+      dir: [0,0,1]
+    material:
+      surface: fulldetect
+      material1: full_absorb
+      material2: gxe
+      color: orange
+
+  - name: SiPMSurface7
+    is_detector: true
+    path: /home/clarke/stl/SiPMSurface7.stl
+    scale: 1.0
+    translation: [0,0,0]
+    rotation:
+      angle: 0
+      dir: [0,0,1]
+    material:
+      surface: fulldetect
+      material1: full_absorb
+      material2: gxe
+      color: orange
+
+  - name: SiPMSurface8
+    is_detector: true
+    path: /home/clarke/stl/SiPMSurface8.stl
+    scale: 1.0
+    translation: [0,0,0]
+    rotation:
+      angle: 0
+      dir: [0,0,1]
+    material:
+      surface: fulldetect
+      material1: full_absorb
+      material2: gxe
+      color: orange
+
+  - name: SiPMSurface9
+    is_detector: true
+    path: /home/clarke/stl/SiPMSurface9.stl
+    scale: 1.0
+    translation: [0,0,0]
+    rotation:
+      angle: 0
+      dir: [0,0,1]
+    material:
+      surface: fulldetect
+      material1: full_absorb
+      material2: gxe
+      color: orange
 
   - name: TeflonReflectors
     is_detector: false
@@ -99,23 +169,23 @@ parts:
       material2: gxe
       color: magenta
 
-  - name: TopPMTEnclosure
+  - name: TopSiPMEnclosure
     is_detector: false
-    path: /home/clarke/stl/TopPMTEnclosure.stl
+    path: /home/clarke/stl/TopSiPMEnclosure.stl
     scale: 1.0
     translation: [0,0,0]
     rotation:
       angle: 0
       dir: [0,0,1]
     material:
-      surface: teflon
-      material1: teflon
+      surface: steel
+      material1: steel
       material2: gxe
-      color: magenta
+      color: red
 
-  - name: TopQuartzWindow
+  - name: SiPMQuartzWindows
     is_detector: false
-    path: /home/clarke/stl/TopQuartzWindow.stl
+    path: /home/clarke/stl/SiPMQuartzWindows.stl
     scale: 1.0
     translation: [0,0,0]
     rotation:

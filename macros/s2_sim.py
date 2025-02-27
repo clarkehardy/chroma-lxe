@@ -40,9 +40,11 @@ def __configure__(db):
     db.extraction_height = 6.5 # mm
     db.wavelength = 175
     db.single_site = False
-    db.output_file = "s2_sim_test_" + ["m","s"][int(db.single_site)] + "s.h5"
+    pmts = False
+    db.sensors = 'PMTs' if pmts else 'SiPMs'
+    db.output_file = "s2_sim_test_" + db.sensors + ["_m","_s"][int(db.single_site)] + "s.h5"
 
-    db.config_file = "/home/clarke/chroma-lxe/geometry/config/XeNu_PMTs.yaml"
+    db.config_file = "/home/clarke/chroma-lxe/geometry/config/XeNu_" + db.sensors + ".yaml"
     db.num_events = 10_000
     db.n_photons = 50_000
     db.notify_event = 10
