@@ -180,7 +180,7 @@ Below is the process for creating a detector definition a SolidWorks:
 2. Select the parts you want to save
 3. Right click and select `Invert Selection`
 4. Right click on any of the inverted selection and select `Hide Components`
-5. Click File > Save as > Save as type: STL > Options > Unit: Millimeters > Save all components of an assembly in a single file > OK > Save
+5. Click File > Save as > Save as type: STL > Options > Unit: Millimeters > Do not translate STL output data to positive space, and Save all components of an assembly in a single file > OK > Save
 6. Undo `Hide Components`
 7. Repeat steps 2-5 for each part you want to save.
 
