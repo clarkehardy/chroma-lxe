@@ -65,14 +65,16 @@ def create_electroluminescence_photons(n: int, wavelength: float, pos: np.ndarra
     return Photons(pos, dirs, pols, wavelengths)
 
 
-def create_multisite_electroluminescence_photons(n: int, wavelength: float, pos_1: np.ndarray, \
+def create_multisite_electroluminescence_photons(n_1: int, n_2: int, wavelength: float, pos_1: np.ndarray, \
                                                  pos_2: np.ndarray, height: float) -> Photons:
     """Create a collection of photons at a given position with random directions.
     
     Parameters
     ----------
-    n : int
-        The number of photons to create.
+    n_1 : int
+        The number of photons to create at site 1.
+    n_2 : int
+        The number of photons to create at site 2.
     wavelength : float
         The wavelength of the photons.
     pos : array-like
@@ -85,8 +87,6 @@ def create_multisite_electroluminescence_photons(n: int, wavelength: float, pos_
     photons : chroma.event.Photons
         The collection of photons
     """
-    n_1 = int(n/2)
-    n_2 = n - n_1
     site_1_photons = create_electroluminescence_photons(n_1, wavelength, pos_1, height)
     site_2_photons = create_electroluminescence_photons(n_2, wavelength, pos_2, height)
 

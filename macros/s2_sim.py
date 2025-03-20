@@ -35,18 +35,20 @@ def __configure__(db):
     db.chroma_keep_photons_beg = False         # saves photons at the beginning of the event
     db.chroma_keep_photons_end = True          # saves photons at the end of the event
 
-    db.positions_path = "/home/clarke/chroma-lxe/data/XeNu_LXe_surface_points.npy"
-    db.positions_path_2 = "/home/clarke/chroma-lxe/data/XeNu_LXe_surface_points_site2.npy"
+    db.positions_path_ss = "/home/clarke/chroma-lxe/data/XeNu_LXe_surface_points_JingkeSim_site0.npy"
+    db.positions_path_ms = ["/home/clarke/chroma-lxe/data/XeNu_LXe_surface_points_JingkeSim_site1.npy", \
+                            "/home/clarke/chroma-lxe/data/XeNu_LXe_surface_points_JingkeSim_site2.npy"]
     db.extraction_height = 6.5 # mm
     db.wavelength = 175
     db.single_site = False
     pmts = False
     db.sensors = 'PMTs' if pmts else 'SiPMs'
-    db.output_file = "s2_sim_test_" + db.sensors + ["_m","_s"][int(db.single_site)] + "s.h5"
+    db.output_file = "s2_sim_test2_" + db.sensors + ["_m","_s"][int(db.single_site)] + "s.h5"
 
     db.config_file = "/home/clarke/chroma-lxe/geometry/config/XeNu_" + db.sensors + ".yaml"
     db.num_events = 10_000
-    db.n_photons = 50_000
+    db.n_photons = 50_000 # only used for monoenergetic events
+    db.monoenergetic = False # splits number of photons equally between sites
     db.notify_event = 10
     db.single_channel = False
 
@@ -62,14 +64,15 @@ def __event_generator__(db):
     convert to a chroma Event)."""
     if db.single_site:
         yield from (
-            create_electroluminescence_photons(n=db.n_photons, wavelength=db.wavelength, pos=position, \
-                                               height=db.extraction_height) for position in db.photon_positions
+            create_electroluminescence_photons(n=photons, wavelength=db.wavelength, pos=position, \
+                                               height=db.extraction_height) for photons, position \
+                                               in zip(db.photons_produced, db.photon_positions)
         )
     else:
         yield from (
-            create_multisite_electroluminescence_photons(n=db.n_photons, wavelength=db.wavelength, pos_1=position, \
-                                                         pos_2=position_2, height=db.extraction_height) for position, position_2 \
-                                                         in zip(db.photon_positions, db.photon_positions_2)
+            create_multisite_electroluminescence_photons(n_1=photons, n_2=photons_2, wavelength=db.wavelength, pos_1=position, \
+                                                         pos_2=position_2, height=db.extraction_height) for photons, photons_2, position, position_2 \
+                                                         in zip(db.photons_produced, db.photons_produced_2, db.photon_positions, db.photon_positions_2)
         )
 
 
@@ -78,10 +81,24 @@ def __simulation_start__(db):
     db.ev_idx = 0
     db.t_sim_start = timer()
 
-    db.photon_positions = np.load(db.positions_path)[:db.num_events]
+    if db.single_site:
+        db.photon_positions = np.load(db.positions_path_ss)[:db.num_events, :3]
+        if db.monoenergetic:
+            db.photons_produced = np.ones(db.num_events, dtype=int)*int(db.n_photons)
+        else:
+            db.photons_produced = np.load(db.positions_path_ss)[:db.num_events, 3].astype(int)
+        db.photons_produced_2 = np.zeros_like(db.photons_produced)
+    else:
+        db.photon_positions = np.load(db.positions_path_ms[0])[:db.num_events, :3]
+        db.photon_positions_2 = np.load(db.positions_path_ms[1])[:db.num_events, :3]
+        if db.monoenergetic:
+            db.photons_produced = np.ones(db.num_events, dtype=int)*int(db.n_photons//2)
+            db.photons_produced_2 = int(db.n_photons) - db.photons_produced
+        else:
+            db.photons_produced = np.load(db.positions_path_ms[0])[:db.num_events, 3].astype(int)
+            db.photons_produced_2 = np.load(db.positions_path_ms[1])[:db.num_events, 3].astype(int)
     db.num_events = len(db.photon_positions)
     db.n_channels = db.geometry.num_channels()
-    db.photon_positions_2 = np.load(db.positions_path_2)[:db.num_events]
     
     # create variable labels
     variables = ["posX", "posY", "posZ", "n", "detected", "pte"]
@@ -109,7 +126,10 @@ def __process_event__(db, ev):
     output["posX"] = position[0]
     output["posY"] = position[1]
     output["posZ"] = position[2]
-    output["n"] = db.n_photons
+    if db.single_site:
+        output["n"] = db.photons_produced[db.event_idx]
+    else:
+        output["n"] = db.photons_produced[db.event_idx] + db.photons_produced_2[db.event_idx]
 
     if not db.single_site:
         position2 = db.photon_positions_2[db.event_idx]
@@ -119,7 +139,7 @@ def __process_event__(db, ev):
 
     detected = len(ev.flat_hits)
     output["detected"] = detected
-    output["pte"] = detected / db.n_photons
+    output["pte"] = detected / output["n"]
 
     if not db.single_channel:
         zfill_width = int(np.log10(db.n_channels)) + 1
@@ -128,7 +148,7 @@ def __process_event__(db, ev):
             hits = ev.hits
             channel_detected = len(hits.get(c, []))
             output[f"ch{channel_id}_detected"] = channel_detected
-            output[f"ch{channel_id}_pte"] = channel_detected / db.n_photons
+            output[f"ch{channel_id}_pte"] = channel_detected / output["n"]
 
     ev_time = time.time() - db.start_time
     output["time_spent"] = ev_time
@@ -146,16 +166,17 @@ def __simulation_end__(db):
     db.writer.close()
 
     n_positions = len(db.photon_positions)
+    n_photons_per_position = int(np.mean(db.photons_produced + db.photons_produced_2))
     results = dict(
         output_path=db.output_file,
         n_positions=n_positions,
-        n_photons_per_position=db.n_photons,
+        n_photons_per_position=n_photons_per_position,
         n_detected=db.total_detected,
         n_detected_per_position=db.total_detected / n_positions,
         avg_pte_per_position=db.total_pte / n_positions,
         total_time=db.total_time,
         sec_per_position=db.total_time / n_positions,
         positions_per_sec=n_positions / db.total_time,
-        photons_per_sec=n_positions * db.n_photons / db.total_time,
+        photons_per_sec=n_positions * n_photons_per_position / db.total_time,
     )
     print_table(**results)
