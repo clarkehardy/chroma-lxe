@@ -1,0 +1,83 @@
+# Description: This file is used to define the geometry of the detector.
+#             The geometry is defined by a list of parts, each of which
+#             is a separate STL file. Each part can have its own material
+#             properties, and can be marked as a detector or not.
+#
+#             Colors can be specified in hexadecimal, e.g. 0x00ff00 for green,
+#             as a string, e.g. 'green', or as a uint32, e.g. 0x00ff00ff for
+#             green with full opacity. All matplotlib colors are supported.
+#
+
+target: vacuum
+log: true
+
+parts:
+  - name: TPCShell
+    is_detector: false
+    path: /home/clarke/stl/infinite_tpc/tpc_shell.stl
+    scale: 1.0
+    translation: [0,0,0]
+    rotation:
+      angle: 0
+      dir: [0,0,1]
+    material:
+      surface: fullabsorb
+      material1: full_absorb
+      material2: gxe
+      color: silver
+
+  - name: TPCBottom
+    is_detector: false
+    path: /home/clarke/stl/infinite_tpc/tpc_bottom.stl
+    scale: 1.0
+    translation: [0,0,0]
+    rotation:
+      angle: 0
+      dir: [0,0,1]
+    material:
+      surface: fullabsorb
+      material1: full_absorb
+      material2: gxe
+      color: silver
+
+  - name: TPCTop
+    is_detector: false
+    path: /home/clarke/stl/infinite_tpc/tpc_top.stl
+    scale: 1.0
+    translation: [0,0,0]
+    rotation:
+      angle: 0
+      dir: [0,0,1]
+    material:
+      surface: fullabsorb
+      material1: full_absorb
+      material2: gxe
+      color: silver
+
+  - name: PMTs
+    is_detector: true
+    path: /home/clarke/stl/infinite_tpc/pmt_76mm_*.stl
+    scale: 1.0
+    translation: [0,0,0]
+    rotation:
+      angle: 0
+      dir: [0,0,1]
+    material:
+      surface: fulldetect
+      material1: full_absorb
+      material2: gxe
+      color: orange
+
+  - name: LXe
+    is_detector: false
+    path: /home/clarke/stl/infinite_tpc/lxe.stl
+    scale: 1.0
+    translation: [0,0,0]
+    rotation:
+      angle: 0
+      dir: [0,0,1]
+    material:
+      surface: lxe
+      material1: lxe
+      material2: gxe
+      color: cyan

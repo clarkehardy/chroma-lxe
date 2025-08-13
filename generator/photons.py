@@ -108,18 +108,21 @@ def plot_photons(photons: Photons):
 
     ax.quiver(photons.pos[:, 0], photons.pos[:, 1], photons.pos[:, 2],
               photons.dir[:, 0], photons.dir[:, 1], photons.dir[:, 2],
-              color=colors[1], alpha=1., length=3., lw=1, normalize=True, label='Direction')
+              color=colors[1], alpha=0.4, length=10., lw=0.5, normalize=True, label='Direction')
 
     ax.quiver(photons.pos[:, 0], photons.pos[:, 1], photons.pos[:, 2],
               photons.pol[:, 0], photons.pol[:, 1], photons.pol[:, 2],
-              color=colors[2], alpha=1., length=3., lw=1, normalize=True, label='Polarization')
+              color=colors[2], alpha=0.4, length=10., lw=0.5, normalize=True, label='Polarization')
 
     ax.set_xlabel('x [mm]', labelpad=15)
     ax.set_ylabel('y [mm]', labelpad=15)
     ax.set_zlabel('z [mm]', labelpad=20)
-    ax.set_xlim([-25, 25])
-    ax.set_ylim([-25, 25])
-    ax.set_zlim([-389, -369])
+    # ax.set_xlim([-25, 25])
+    # ax.set_ylim([-25, 25])
+    # ax.set_zlim([-389, -369])
+    ax.set_xlim([-100, 100])
+    ax.set_ylim([-100, 100])
+    ax.set_zlim([400, 600])
     ax.set_box_aspect((1, 1, 1))
     ax.dist = 12
     ax.legend()
@@ -129,10 +132,12 @@ def plot_photons(photons: Photons):
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
-    sites = np.load('chroma-lxe/data/XeNu_LXe_surface_points_site2.npy')
+    # sites = np.load('chroma-lxe/data/XeNu_LXe_surface_points_site2.npy')
+    sites = np.load('chroma-lxe/data/infinite_tpc/lxe_surface_100mm_rad_site1.npy')
     #print(sites[0])
     # photons = create_multisite_electroluminescence_photons(50, 175, sites[1], sites[2], 10.0)
-    photons = create_electroluminescence_photons(50, 175, sites[5], 10.0)
+    photons = create_electroluminescence_photons(100, 175, sites[5], 10.0)
+    print(photons)
     fig, ax = plot_photons(photons)
     #plt.savefig('ms_event_photons.png')
     #plt.savefig('ss_event_photons.png')

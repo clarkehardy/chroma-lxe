@@ -4,6 +4,12 @@ import numpy as np
 fulldetect = Surface('fulldetect')
 fulldetect.set('detect', 1.0)
 #***************************************************************************
+fullabsorb = Surface('fullabsorb')
+fullabsorb.set('absorb', 1)
+fullabsorb.set('reflect_diffuse', 0)
+fullabsorb.set('reflect_specular', 0)
+fullabsorb.set('detect', 0)
+#***************************************************************************
 SSuprasil = Surface('SSuprasil')
 SSuprasil.set('detect', 0)
 SSuprasil.set('absorb', 0)

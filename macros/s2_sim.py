@@ -36,24 +36,24 @@ def __configure__(db):
     db.chroma_keep_photons_end = True          # saves photons at the end of the event
     db.extraction_height = 6.5 # mm
     db.wavelength = 175
-    db.single_site = False
+    db.single_site = True
     pmts = False
     individual_sipms = True
     db.sensors = 'PMTs' if pmts else 'SiPMs' + ['','_individual'][int(individual_sipms)]
-    db.output_file = "s2_sim_synth2_" + db.sensors + ["_m","_s"][int(db.single_site)] + "s.h5"
+    db.output_file = "s2_sim_resampled_100k_" + db.sensors + ["_m","_s"][int(db.single_site)] + "s.h5"
 
     db.config_file = "/home/clarke/chroma-lxe/geometry/config/XeNu_" + db.sensors + ".yaml"
-    db.num_events = 10_000
+    db.num_events = 100_000
     db.n_photons = 50_000 # only used for monoenergetic events
-    db.monoenergetic = True # splits number of photons equally between sites
+    db.monoenergetic = False # splits number of photons equally between sites
     if db.monoenergetic:
         db.positions_path_ss = "/home/clarke/chroma-lxe/data/XeNu_LXe_surface_points.npy"
         db.positions_path_ms = ["/home/clarke/chroma-lxe/data/XeNu_LXe_surface_points.npy", \
                                 "/home/clarke/chroma-lxe/data/XeNu_LXe_surface_points_site2.npy"]
     else:
-        db.positions_path_ss = "/home/clarke/chroma-lxe/data/XeNu_LXe_surface_points_JingkeSim_site0.npy"
-        db.positions_path_ms = ["/home/clarke/chroma-lxe/data/XeNu_LXe_surface_points_JingkeSim_site1.npy", \
-                                "/home/clarke/chroma-lxe/data/XeNu_LXe_surface_points_JingkeSim_site2.npy"]
+        db.positions_path_ss = "/home/clarke/chroma-lxe/data/XeNu_LXe_surface_points_JingkeResampled_site0.npy"
+        db.positions_path_ms = ["/home/clarke/chroma-lxe/data/XeNu_LXe_surface_points_JingkeResampled_site1.npy", \
+                                "/home/clarke/chroma-lxe/data/XeNu_LXe_surface_points_JingkeResampled_site2.npy"]
     db.notify_event = 10
     db.single_channel = False
 
