@@ -56,7 +56,7 @@ parts:
 
   - name: PMTs
     is_detector: true
-    path: /home/clarke/stl/infinite_tpc/pmt_76mm_*.stl
+    path: /home/clarke/stl/infinite_tpc/pmt_51mm_91pct_*.stl
     scale: 1.0
     translation: [0,0,0]
     rotation:

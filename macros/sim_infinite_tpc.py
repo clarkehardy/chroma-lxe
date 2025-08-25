@@ -34,20 +34,21 @@ def __configure__(db):
     db.chroma_daq = True
     db.chroma_keep_photons_beg = False         # saves photons at the beginning of the event
     db.chroma_keep_photons_end = True          # saves photons at the end of the event
-    db.extraction_height = 10. # mm
+    db.extraction_height = 1. # mm
     db.wavelength = 175
     db.single_site = True
-    db.pmt_diameter = 76
+    db.pmt_diameter = 51
+    db.acceptance_angle = 10000.
 
     db.config_file = "/home/clarke/chroma-lxe/geometry/config/infinite_TPC.yaml"
     db.num_events = 10_000
-    db.n_photons = 100_000
+    db.n_photons = 10_000
 
-    db.output_file = "sim_infinite_{:.0f}mm_diam_{:.0e}_photons_{:.0e}_events_{}.h5"\
-        .format(db.pmt_diameter, db.n_photons, db.num_events, ['ms', 'ss'][int(db.single_site)])
-    db.positions_path_ss = "/home/clarke/chroma-lxe/data/infinite_tpc/lxe_surface_100mm_rad_site1.npy"
-    db.positions_path_ms = ["/home/clarke/chroma-lxe/data/infinite_tpc/lxe_surface_100mm_rad_site1.npy", \
-                            "/home/clarke/chroma-lxe/data/infinite_tpc/lxe_surface_100mm_rad_site2.npy"]
+    db.output_file = "sim_infinite_{:.0f}mm_diam_{:.0f}deg_acceptance_{:.0e}_photons_{:.0e}_events_{}.h5"\
+        .format(db.pmt_diameter, db.acceptance_angle, db.n_photons, db.num_events, ['ms', 'ss'][int(db.single_site)])
+    db.positions_path_ss = "/home/clarke/chroma-lxe/data/infinite_tpc/lxe_surface_400mm_rad_site1.npy"
+    db.positions_path_ms = ["/home/clarke/chroma-lxe/data/infinite_tpc/lxe_surface_400mm_rad_site1.npy", \
+                            "/home/clarke/chroma-lxe/data/infinite_tpc/lxe_surface_400mm_rad_site2.npy"]
     db.notify_event = 10
     db.single_channel = False
 
@@ -137,8 +138,14 @@ def __process_event__(db, ev):
         zfill_width = int(np.log10(db.n_channels)) + 1
         for c in range(db.n_channels):
             channel_id = str(c).zfill(zfill_width)
-            hits = ev.hits
-            channel_detected = len(hits.get(c, []))
+            photons = ev.hits.get(c, [])
+            if len(photons) > 0:
+                dotprod = np.dot(photons.dir, np.array((0, 0, 1)))
+                magnitudes = np.linalg.norm(photons.dir, axis=1)
+                angles = np.rad2deg(np.arccos(np.clip(dotprod/magnitudes, -1.0, 1.0)))
+            else:
+                angles = np.array(())
+            channel_detected = np.sum(angles < db.acceptance_angle)
             output[f"ch{channel_id}_detected"] = channel_detected
             output[f"ch{channel_id}_pte"] = channel_detected / output["n"]
 

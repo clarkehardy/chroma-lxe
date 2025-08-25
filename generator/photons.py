@@ -120,9 +120,9 @@ def plot_photons(photons: Photons):
     # ax.set_xlim([-25, 25])
     # ax.set_ylim([-25, 25])
     # ax.set_zlim([-389, -369])
-    ax.set_xlim([-100, 100])
-    ax.set_ylim([-100, 100])
-    ax.set_zlim([400, 600])
+    ax.set_xlim([-20, 20])
+    ax.set_ylim([-20, 20])
+    ax.set_zlim([220, 260])
     ax.set_box_aspect((1, 1, 1))
     ax.dist = 12
     ax.legend()
@@ -133,10 +133,10 @@ def plot_photons(photons: Photons):
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     # sites = np.load('chroma-lxe/data/XeNu_LXe_surface_points_site2.npy')
-    sites = np.load('chroma-lxe/data/infinite_tpc/lxe_surface_100mm_rad_site1.npy')
+    sites = np.load('chroma-lxe/data/infinite_tpc/lxe_surface_400mm_rad_site1.npy')
     #print(sites[0])
     # photons = create_multisite_electroluminescence_photons(50, 175, sites[1], sites[2], 10.0)
-    photons = create_electroluminescence_photons(100, 175, sites[5], 10.0)
+    photons = create_electroluminescence_photons(100, 175, np.array((0, 0, sites[2,-1])), 10.0)
     print(photons)
     fig, ax = plot_photons(photons)
     #plt.savefig('ms_event_photons.png')
